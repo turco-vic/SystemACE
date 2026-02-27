@@ -1,11 +1,11 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=FF6B00,FFB347&height=200&section=header&text=Sistema%20de%20Gestão%20de%20EPIs&fontSize=36&fontColor=ffffff&fontAlignY=38&desc=SENAI%20SC%20Joinville&descAlignY=58&descSize=18" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=FF6B00,FFB347&height=200&section=header&text=Sistema%20de%20Gestão%20de%20EPIs&fontSize=36&fontColor=ffffff&fontAlignY=38&desc=SENAI%20Roberto%20Mange&descAlignY=58&descSize=18" />
 
 <br>
 
 ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-orange?style=for-the-badge)
-![Instituição](https://img.shields.io/badge/Instituição-SENAI%20SC%20Joinville-blue?style=for-the-badge)
+![Instituição](https://img.shields.io/badge/Instituição-SENAI%20Roberto%20Mange-blue?style=for-the-badge)
 ![Licença](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)
 
 </div>
@@ -22,17 +22,18 @@ O **Sistema de Gestão de EPIs** é uma solução desenvolvida para modernizar e
 
 ## 🚨 Problemas que o Sistema Resolve
 
-| Problema | Impacto | Solução |
-|----------|---------|---------|
-| Falta de rastreabilidade | Equipamentos perdidos ou extraviados | Registro digital com histórico completo |
-| Estoque descontrolado | Reposição ineficiente e custos elevados | Gestão de estoque automatizada |
-| Sem controle de uso | Riscos de segurança e acidentes | Solicitação e aprovação digitalizada |
-| Ausência de registros | Multas e problemas jurídicos | Conformidade com normas de segurança |
-| Processos manuais | Retrabalho e erros humanos | Fluxo digital e automatizado |
+| Problema                 | Impacto                                 | Solução                                 |
+| ------------------------ | --------------------------------------- | --------------------------------------- |
+| Falta de rastreabilidade | Equipamentos perdidos ou extraviados    | Registro digital com histórico completo |
+| Estoque descontrolado    | Reposição ineficiente e custos elevados | Gestão de estoque automatizada          |
+| Sem controle de uso      | Riscos de segurança e acidentes         | Solicitação e aprovação digitalizada    |
+| Ausência de registros    | Multas e problemas jurídicos            | Conformidade com normas de segurança    |
+| Processos manuais        | Retrabalho e erros humanos              | Fluxo digital e automatizado            |
 
 ---
 
 ## 👥 Usuários do Sistema
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                   SISTEMA DE EPIs                       │
@@ -50,17 +51,20 @@ O **Sistema de Gestão de EPIs** é uma solução desenvolvida para modernizar e
 ### 🔐 Detalhamento de Permissões
 
 **👷 Funcionário (Admin)**
+
 - CRUD completo de EPIs (Criar, Ler, Atualizar, Deletar)
 - Validação e controle do estoque
 - Geração de relatórios
 - Gerenciamento de usuários
 
 **👨‍🏫 Professor**
+
 - Visualização e utilização de EPIs disponíveis
 - Aprovação/rejeição de solicitações de alunos
 - Histórico de uso pessoal
 
 **🧑‍🎓 Aluno**
+
 - Visualização de EPIs disponíveis
 - Solicitação de empréstimo de EPIs
 - Acompanhamento do status das solicitações
@@ -84,6 +88,7 @@ O **Sistema de Gestão de EPIs** é uma solução desenvolvida para modernizar e
 ---
 
 ## 🗂️ Estrutura do Sistema
+
 ```
 sistema-epis/
 ├── 📁 backend/

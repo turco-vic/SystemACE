@@ -4,6 +4,7 @@
     </header>
     <main>
         <h1>Bem-vindo ao SystemACE</h1>
+        <PageNav />
     </main>
     <footer>
         <p>© 2024 Sistema ACE. Todos os direitos reservados.</p>
@@ -11,7 +12,12 @@
 </template>
 
 <script>
+import PageNav from "../components/PageNav.vue";
+
 export default {
     name: "Estoque",
+    components: {
+        PageNav,
+    },
 }
 </script>

@@ -9,13 +9,34 @@ import Dashboard from "../views/Dashboard.vue"
 import Estoque from "../views/Estoque.vue"
 
 const routes = [
-    {path: "/", component: Home},
-    {path: "/sobre", component: Sobre},
-    {path: "/contato", component: Contato},
-    {path: "/login", component: Login},
-    {path: "/cadastro", component: Cadastro},
-    {path: "/dashboard", component: Dashboard},
-    {path: "/estoque", component: Estoque},
+    {
+        path: "/", 
+        component: Home
+    },
+    {
+        path: "/sobre", 
+        component: Sobre
+    },
+    {
+        path: "/contato", 
+        component: Contato
+    },
+    {
+        path: "/login", 
+        component: Login
+    },
+    {
+        path: "/cadastro", 
+        component: Cadastro
+    },
+    {
+        path: "/dashboard", 
+        component: Dashboard
+    },
+    {
+        path: "/estoque", 
+        component: Estoque
+    },
 ]
 
 const router = createRouter({

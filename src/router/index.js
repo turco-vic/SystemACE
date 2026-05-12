@@ -6,37 +6,37 @@ import Login from "../views/Login.vue"
 import Cadastro from "../views/Cadastro.vue"
 import Dashboard from "../views/Dashboard.vue"
 import Estoque from "../views/Estoque.vue"
-import home_ from "../views/home_.vue"
+import home_ from "../views/Home.vue"
 
 const routes = [
-  
+
     {
-        path: "/sobre", 
+        path: "/sobre",
         component: Sobre
     },
     {
-        path: "/contato", 
+        path: "/contato",
         component: Contato
     },
     {
-        path: "/login", 
+        path: "/login",
         component: Login
     },
     {
-        path: "/cadastro", 
+        path: "/cadastro",
         component: Cadastro
     },
     {
-        path: "/dashboard", 
+        path: "/dashboard",
         component: Dashboard
     },
     {
-        path: "/estoque", 
+        path: "/estoque",
         component: Estoque
     },
 
     {
-        path: "/", 
+        path: "/",
         component: home_
     },
 

@@ -13,26 +13,27 @@
         <div class="header-right">
           <button class="btn-primary" @click="openCadastroModal">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <path d="M7.5 1V14M1 7.5H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M7.5 1V14M1 7.5H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
             Cadastrar
           </button>
           <button class="btn-secondary" @click="showFiltroModal = true">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <path d="M1 3H14M3 7.5H12M5.5 12H9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M1 3H14M3 7.5H12M5.5 12H9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
             Filtrar
           </button>
           <button v-if="filtroTipo || filtroDisponibilidade" class="btn-danger-soft" @click="limparFiltros">
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-              <path d="M1 1L12 12M12 1L1 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M1 1L12 12M12 1L1 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
             Limpar
           </button>
           <button class="btn-secondary" @click="exportarTablePDF">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <path d="M7.5 1V10M7.5 10L4.5 7M7.5 10L10.5 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M1.5 11.5V13H13.5V11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M7.5 1V10M7.5 10L4.5 7M7.5 10L10.5 7" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M1.5 11.5V13H13.5V11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
             Exportar
           </button>
@@ -82,15 +83,11 @@
           <div class="table-toolbar">
             <div class="search-wrap">
               <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="6.5" cy="6.5" r="5" stroke="#94a3b8" stroke-width="1.5"/>
-                <path d="M10.5 10.5L14 14" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="6.5" cy="6.5" r="5" stroke="#94a3b8" stroke-width="1.5" />
+                <path d="M10.5 10.5L14 14" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" />
               </svg>
-              <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Filtre por nome, tipo ou patrimônio..."
-                class="search-input"
-              />
+              <input v-model="searchQuery" type="text" placeholder="Filtre por nome, tipo ou patrimônio..."
+                class="search-input" />
             </div>
             <span class="results-count">{{ filteredEPIs.length }} registro(s)</span>
           </div>
@@ -130,22 +127,31 @@
                   <td class="actions-cell">
                     <button class="btn-dots" @click="openMenu($event, epi)" title="Ações">
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <circle cx="8" cy="3" r="1.2" fill="currentColor"/>
-                        <circle cx="8" cy="8" r="1.2" fill="currentColor"/>
-                        <circle cx="8" cy="13" r="1.2" fill="currentColor"/>
+                        <circle cx="8" cy="3" r="1.2" fill="currentColor" />
+                        <circle cx="8" cy="8" r="1.2" fill="currentColor" />
+                        <circle cx="8" cy="13" r="1.2" fill="currentColor" />
                       </svg>
                     </button>
                     <div v-if="activeMenu === epi.idepis" class="action-menu">
                       <button @click="editarEPI(epi)" class="menu-item">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 13L4.5 12 12.5 4 10 1.5 2 9.5 1 13Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                          <path d="M1 13L4.5 12 12.5 4 10 1.5 2 9.5 1 13Z" stroke="currentColor" stroke-width="1.2"
+                            stroke-linejoin="round" />
+                        </svg>
                         Editar
                       </button>
                       <button @click="visualizarDetalhes(epi)" class="menu-item">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 6V10M7 4.5V5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                          <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2" />
+                          <path d="M7 6V10M7 4.5V5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                        </svg>
                         Detalhes
                       </button>
                       <button @click="deletarEPI(epi.idepis)" class="menu-item danger">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5H12M5 3.5V2.5H9V3.5M5.5 6V11M8.5 6V11M3 3.5L3.5 12H10.5L11 3.5H3Z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                          <path d="M2 3.5H12M5 3.5V2.5H9V3.5M5.5 6V11M8.5 6V11M3 3.5L3.5 12H10.5L11 3.5H3Z"
+                            stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                         Deletar
                       </button>
                     </div>
@@ -167,32 +173,34 @@
         <div class="modal-head">
           <h2>{{ novoEPI.idepis ? 'Editar EPI' : 'Cadastrar Novo EPI' }}</h2>
           <button class="btn-close-modal" @click="showCadastroModal = false">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 3L15 15M15 3L3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 3L15 15M15 3L3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
           </button>
         </div>
         <form class="modal-form" @submit.prevent="salvarEPI">
           <div class="form-group">
             <label>Nome do EPI *</label>
-            <input v-model="novoEPI.nome" type="text" required placeholder="Ex: Capacete de Segurança"/>
+            <input v-model="novoEPI.nome" type="text" required placeholder="Ex: Capacete de Segurança" />
           </div>
           <div class="form-group">
             <label>Tipo *</label>
-            <input v-model="novoEPI.tipo" type="text" required placeholder="Ex: Proteção Cabeça"/>
+            <input v-model="novoEPI.tipo" type="text" required placeholder="Ex: Proteção Cabeça" />
           </div>
           <div class="form-row">
             <div class="form-group">
               <label>Quantidade *</label>
-              <input v-model.number="novoEPI.quantidade" type="number" required min="0" placeholder="0"/>
+              <input v-model.number="novoEPI.quantidade" type="number" required min="0" placeholder="0" />
             </div>
             <div class="form-group">
               <label>Código Patrimônio</label>
-              <input v-model="novoEPI.codigo_patrimonio" type="text" placeholder="Ex: PAT-001"/>
+              <input v-model="novoEPI.codigo_patrimonio" type="text" placeholder="Ex: PAT-001" />
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label>Data de Validade</label>
-              <input v-model="novoEPI.data_validade" type="date"/>
+              <input v-model="novoEPI.data_validade" type="date" />
             </div>
             <div class="form-group">
               <label>Disponível</label>
@@ -204,9 +212,9 @@
           </div>
           <div class="form-group">
             <label>Foto do EPI</label>
-            <input ref="fotoInput" type="file" @change="handleFotoChange" accept="image/*" class="file-input"/>
+            <input ref="fotoInput" type="file" @change="handleFotoChange" accept="image/*" class="file-input" />
             <div v-if="novoEPI.fotoPreview" class="foto-preview">
-              <img :src="novoEPI.fotoPreview" alt="Preview"/>
+              <img :src="novoEPI.fotoPreview" alt="Preview" />
             </div>
           </div>
           <div class="modal-foot">
@@ -223,7 +231,9 @@
         <div class="modal-head">
           <h2>Filtrar EPIs</h2>
           <button class="btn-close-modal" @click="showFiltroModal = false">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 3L15 15M15 3L3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 3L15 15M15 3L3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
           </button>
         </div>
         <div class="modal-form">
@@ -498,7 +508,11 @@ onMounted(carregarEPIs)
   transition: background 0.2s, transform 0.15s;
   font-family: inherit;
 }
-.btn-primary:hover { background-color: #1d4ed8; transform: translateY(-1px); }
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
 
 .btn-secondary {
   display: flex;
@@ -515,7 +529,12 @@ onMounted(carregarEPIs)
   transition: all 0.2s;
   font-family: inherit;
 }
-.btn-secondary:hover { border-color: #2563EB; color: #2563EB; background-color: #eff6ff; }
+
+.btn-secondary:hover {
+  border-color: #2563EB;
+  color: #2563EB;
+  background-color: #eff6ff;
+}
 
 .btn-danger-soft {
   display: flex;
@@ -532,7 +551,10 @@ onMounted(carregarEPIs)
   transition: all 0.2s;
   font-family: inherit;
 }
-.btn-danger-soft:hover { background-color: #fee2e2; }
+
+.btn-danger-soft:hover {
+  background-color: #fee2e2;
+}
 
 /* Main */
 .epis-main {
@@ -580,10 +602,22 @@ onMounted(carregarEPIs)
   justify-content: center;
   font-size: 1rem;
 }
-.stat-icon-wrap.total  { background-color: #eff6ff; }
-.stat-icon-wrap.avail  { background-color: #f0fdf4; }
-.stat-icon-wrap.inuse  { background-color: #fffbeb; }
-.stat-icon-wrap.alert  { background-color: #fef2f2; }
+
+.stat-icon-wrap.total {
+  background-color: #eff6ff;
+}
+
+.stat-icon-wrap.avail {
+  background-color: #f0fdf4;
+}
+
+.stat-icon-wrap.inuse {
+  background-color: #fffbeb;
+}
+
+.stat-icon-wrap.alert {
+  background-color: #fef2f2;
+}
 
 .stat-number {
   font-size: 2rem;
@@ -597,7 +631,10 @@ onMounted(carregarEPIs)
   font-size: 0.75rem;
   color: #64748b;
 }
-.stat-sub.warn { color: #ef4444; }
+
+.stat-sub.warn {
+  color: #ef4444;
+}
 
 /* Card */
 .card {
@@ -629,9 +666,15 @@ onMounted(carregarEPIs)
   padding: 8px 12px;
   transition: border-color 0.2s;
 }
-.search-wrap:focus-within { border-color: #2563EB; background-color: #fff; }
 
-.search-icon { flex-shrink: 0; }
+.search-wrap:focus-within {
+  border-color: #2563EB;
+  background-color: #fff;
+}
+
+.search-icon {
+  flex-shrink: 0;
+}
 
 .search-input {
   border: none;
@@ -642,7 +685,10 @@ onMounted(carregarEPIs)
   width: 100%;
   font-family: inherit;
 }
-.search-input::placeholder { color: #94a3b8; }
+
+.search-input::placeholder {
+  color: #94a3b8;
+}
 
 .results-count {
   font-size: 0.78rem;
@@ -651,7 +697,9 @@ onMounted(carregarEPIs)
 }
 
 /* Table */
-.table-wrap { overflow-x: auto; }
+.table-wrap {
+  overflow-x: auto;
+}
 
 .data-table {
   width: 100%;
@@ -682,8 +730,13 @@ onMounted(carregarEPIs)
   vertical-align: middle;
 }
 
-.data-table tbody tr:last-child td { border-bottom: none; }
-.data-table tbody tr:hover td { background-color: #f8fafc; }
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover td {
+  background-color: #f8fafc;
+}
 
 .epi-name-cell {
   display: flex;
@@ -715,7 +768,10 @@ onMounted(carregarEPIs)
   margin-top: 2px;
 }
 
-.mono { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; }
+.mono {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+}
 
 /* Status badges */
 .status-badge {
@@ -725,13 +781,32 @@ onMounted(carregarEPIs)
   font-size: 0.72rem;
   font-weight: 700;
 }
-.status-badge.disponivel    { background: #dcfce7; color: #16a34a; }
-.status-badge.sem-estoque   { background: #fef9c3; color: #ca8a04; }
-.status-badge.vencido       { background: #fef2f2; color: #ef4444; }
-.status-badge.indisponivel  { background: #f1f5f9; color: #64748b; }
+
+.status-badge.disponivel {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status-badge.sem-estoque {
+  background: #fef9c3;
+  color: #ca8a04;
+}
+
+.status-badge.vencido {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.status-badge.indisponivel {
+  background: #f1f5f9;
+  color: #64748b;
+}
 
 /* Actions */
-.actions-cell { position: relative; text-align: center; }
+.actions-cell {
+  position: relative;
+  text-align: center;
+}
 
 .btn-dots {
   background: none;
@@ -745,7 +820,11 @@ onMounted(carregarEPIs)
   align-items: center;
   justify-content: center;
 }
-.btn-dots:hover { background-color: #f1f5f9; color: #1e293b; }
+
+.btn-dots:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
 
 .action-menu {
   position: absolute;
@@ -756,7 +835,7 @@ onMounted(carregarEPIs)
   border-radius: 8px;
   z-index: 200;
   min-width: 140px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   overflow: hidden;
 }
 
@@ -775,8 +854,16 @@ onMounted(carregarEPIs)
   font-family: inherit;
   transition: background 0.15s;
 }
-.menu-item:hover { background-color: #f8fafc; color: #1e293b; }
-.menu-item.danger:hover { background-color: #fef2f2; color: #ef4444; }
+
+.menu-item:hover {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.menu-item.danger:hover {
+  background-color: #fef2f2;
+  color: #ef4444;
+}
 
 .menu-overlay {
   position: fixed;
@@ -811,9 +898,12 @@ onMounted(carregarEPIs)
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
-.modal-sm { max-width: 400px; }
+
+.modal-sm {
+  max-width: 400px;
+}
 
 .modal-head {
   display: flex;
@@ -839,7 +929,11 @@ onMounted(carregarEPIs)
   transition: all 0.15s;
   display: flex;
 }
-.btn-close-modal:hover { color: #ef4444; background: #fef2f2; }
+
+.btn-close-modal:hover {
+  color: #ef4444;
+  background: #fef2f2;
+}
 
 .modal-form {
   display: flex;
@@ -870,15 +964,20 @@ onMounted(carregarEPIs)
   font-family: inherit;
   transition: all 0.2s;
 }
+
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
   border-color: #2563EB;
   background-color: #fff;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
 
 .modal-foot {
   display: flex;
@@ -899,7 +998,10 @@ onMounted(carregarEPIs)
   font-family: inherit;
   transition: background 0.2s;
 }
-.btn-save:hover { background-color: #1d4ed8; }
+
+.btn-save:hover {
+  background-color: #1d4ed8;
+}
 
 .btn-cancel-modal {
   background-color: #f1f5f9;
@@ -913,7 +1015,10 @@ onMounted(carregarEPIs)
   font-family: inherit;
   transition: background 0.2s;
 }
-.btn-cancel-modal:hover { background-color: #e2e8f0; }
+
+.btn-cancel-modal:hover {
+  background-color: #e2e8f0;
+}
 
 .file-input {
   font-size: 0.82rem;
@@ -929,19 +1034,41 @@ onMounted(carregarEPIs)
   border: 1px solid #e2e8f0;
   margin-top: 4px;
 }
-.foto-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+.foto-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 /* Responsive */
 @media (max-width: 1200px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
+
 @media (max-width: 768px) {
-  .epis-main { padding: 16px; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .top-header { padding: 14px 16px; }
-  .form-row { grid-template-columns: 1fr; }
+  .epis-main {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .top-header {
+    padding: 14px 16px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
+
 @media (max-width: 480px) {
-  .stats-grid { grid-template-columns: 1fr; }
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

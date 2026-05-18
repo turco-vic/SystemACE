@@ -13,8 +13,9 @@
         <div class="header-right">
           <button class="btn-exportar" @click="exportarPDF">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1V11M8 11L5 8M8 11L11 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 12V14H14V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M8 1V11M8 11L5 8M8 11L11 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M2 12V14H14V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
             Exportar
           </button>
@@ -327,7 +328,9 @@ onMounted(async () => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 .app-layout {
   display: flex;
@@ -433,10 +436,22 @@ onMounted(async () => {
   justify-content: center;
   font-size: 1rem;
 }
-.stat-icon-wrap.total { background-color: #eff6ff; }
-.stat-icon-wrap.avail { background-color: #f0fdf4; }
-.stat-icon-wrap.inuse { background-color: #fffbeb; }
-.stat-icon-wrap.alert { background-color: #fef2f2; }
+
+.stat-icon-wrap.total {
+  background-color: #eff6ff;
+}
+
+.stat-icon-wrap.avail {
+  background-color: #f0fdf4;
+}
+
+.stat-icon-wrap.inuse {
+  background-color: #fffbeb;
+}
+
+.stat-icon-wrap.alert {
+  background-color: #fef2f2;
+}
 
 .stat-number {
   font-size: 2rem;
@@ -606,9 +621,18 @@ onMounted(async () => {
   border-radius: 50%;
   flex-shrink: 0;
 }
-.ativ-dot.green { background-color: #22c55e; }
-.ativ-dot.red   { background-color: #ef4444; }
-.ativ-dot.yellow { background-color: #f59e0b; }
+
+.ativ-dot.green {
+  background-color: #22c55e;
+}
+
+.ativ-dot.red {
+  background-color: #ef4444;
+}
+
+.ativ-dot.yellow {
+  background-color: #f59e0b;
+}
 
 .ativ-text {
   flex: 1;
@@ -704,18 +728,36 @@ onMounted(async () => {
 
 /* Responsive */
 @media (max-width: 1200px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .mid-grid { grid-template-columns: 1fr 1fr; }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mid-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 768px) {
-  .dashboard-main { padding: 16px; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .mid-grid { grid-template-columns: 1fr; }
-  .top-header { padding: 14px 16px; }
+  .dashboard-main {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mid-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .top-header {
+    padding: 14px 16px;
+  }
 }
 
 @media (max-width: 480px) {
-  .stats-grid { grid-template-columns: 1fr; }
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

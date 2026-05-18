@@ -1,64 +1,62 @@
 <template>
     <div class="cadastro-page">
-        <div class="cadastro-card">
-            <!-- Left: CTA side -->
-            <div class="left-panel">
-                <div class="circle circle-top"></div>
-                <div class="circle circle-bottom"></div>
-                <div class="left-content">
-                    <h2 class="left-title">Já possui uma conta?</h2>
-                    <p class="left-subtitle">Se você já tem uma conta,<br>basta fazer o login.</p>
-                    <button class="btn-entrar" @click="$router.push('/login')">Entre</button>
-                </div>
-            </div>
 
-            <!-- Right: Form side -->
-            <div class="right-panel">
-                <div class="form-area">
-                    <h1 class="form-title">Crie sua conta</h1>
-
-                    <div class="input-row">
-                        <input v-model="nome" type="text" placeholder="Nome" class="input-field" />
-                        <input v-model="sobrenome" type="text" placeholder="Sobrenome" class="input-field" />
-                    </div>
-
-                    <div class="input-row">
-                        <input v-model="email" type="email" placeholder="Email" class="input-field" />
-                        <div class="password-wrapper">
-                            <input v-model="senha" :type="showPassword ? 'text' : 'password'" placeholder="Senha"
-                                class="input-field" autocomplete="new-password" />
-                            <button class="toggle-password" @click="showPassword = !showPassword" type="button">
-                                <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                    <circle cx="12" cy="12" r="3" />
-                                </svg>
-                                <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path
-                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                                    <line x1="1" y1="1" x2="23" y2="23" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="terms-row">
-                        <label class="checkbox-label">
-                            <input type="checkbox" v-model="aceitouTermos" class="checkbox" />
-                            <span>Eu li os <a href="#" class="terms-link">Termos e Condições</a></span>
-                        </label>
-                    </div>
-
-                    <button class="btn-cadastrar" :class="{ active: aceitouTermos }" :disabled="!aceitouTermos"
-                        @click="handleCadastro">
-                        Cadastrar-se
-                    </button>
-                </div>
+        <div class="left-panel">
+            <div class="circle circle-top"></div>
+            <div class="circle circle-bottom"></div>
+            <div class="left-content">
+                <h2 class="left-title">Já possui uma conta?</h2>
+                <p class="left-subtitle">Se você já tem uma conta,<br>basta fazer o login.</p>
+                <button class="btn-entrar" @click="$router.push('/login')">Entre</button>
             </div>
         </div>
+
+        <div class="right-panel">
+            <div class="form-area">
+                <h1 class="form-title">Crie sua conta</h1>
+
+                <div class="input-row">
+                    <input v-model="nome" type="text" placeholder="Nome" class="input-field" />
+                    <input v-model="sobrenome" type="text" placeholder="Sobrenome" class="input-field" />
+                </div>
+
+                <div class="input-row">
+                    <input v-model="email" type="email" placeholder="Email" class="input-field" />
+                    <div class="password-wrapper">
+                        <input v-model="senha" :type="showPassword ? 'text' : 'password'" placeholder="Senha"
+                            class="input-field" autocomplete="new-password" />
+                        <button class="toggle-password" @click="showPassword = !showPassword" type="button">
+                            <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                <line x1="1" y1="1" x2="23" y2="23" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="terms-row">
+                    <label class="checkbox-label">
+                        <input type="checkbox" v-model="aceitouTermos" class="checkbox" />
+                        <span>Eu li os <a href="#" class="terms-link">Termos e Condições</a></span>
+                    </label>
+                </div>
+
+                <button class="btn-cadastrar" :class="{ active: aceitouTermos }" :disabled="!aceitouTermos"
+                    @click="handleCadastro">
+                    Cadastrar-se
+                </button>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -67,18 +65,13 @@ export default {
     name: 'Cadastro',
     data() {
         return {
-            nome: '',
-            sobrenome: '',
-            email: '',
-            senha: '',
-            showPassword: false,
-            aceitouTermos: false,
+            nome: '', sobrenome: '', email: '', senha: '',
+            showPassword: false, aceitouTermos: false,
         }
     },
     methods: {
         handleCadastro() {
             if (!this.aceitouTermos) return
-            // TODO: implementar cadastro
             console.log('Cadastro:', this.nome, this.email)
         }
     }
@@ -86,27 +79,20 @@ export default {
 </script>
 
 <style scoped>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 .cadastro-page {
-    min-height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #e8e8e8;
+    min-height: 100vh;
     font-family: 'Segoe UI', sans-serif;
 }
 
-.cadastro-card {
-    display: flex;
-    width: 900px;
-    min-height: 520px;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
-}
-
-/* LEFT PANEL */
 .left-panel {
-    width: 340px;
+    width: 42%;
     background: linear-gradient(160deg, #62c3f8 0%, #3a9de8 100%);
     display: flex;
     align-items: center;
@@ -122,17 +108,17 @@ export default {
 }
 
 .circle-top {
-    width: 240px;
-    height: 240px;
-    top: -70px;
-    left: -60px;
+    width: 420px;
+    height: 420px;
+    top: -120px;
+    left: -100px;
 }
 
 .circle-bottom {
-    width: 180px;
-    height: 180px;
-    bottom: -50px;
-    right: -40px;
+    width: 300px;
+    height: 300px;
+    bottom: -80px;
+    right: -60px;
 }
 
 .left-content {
@@ -142,7 +128,7 @@ export default {
 }
 
 .left-title {
-    font-size: 26px;
+    font-size: 30px;
     font-weight: 700;
     color: #ffffff;
     margin-bottom: 14px;
@@ -156,7 +142,7 @@ export default {
 }
 
 .btn-entrar {
-    padding: 12px 48px;
+    padding: 13px 48px;
     background: #ffffff;
     color: #3a9de8;
     font-size: 15px;
@@ -175,7 +161,6 @@ export default {
     transform: scale(0.98);
 }
 
-/* RIGHT PANEL */
 .right-panel {
     flex: 1;
     background: #ffffff;
@@ -187,7 +172,7 @@ export default {
 
 .form-area {
     width: 100%;
-    max-width: 420px;
+    max-width: 460px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -218,9 +203,8 @@ export default {
     font-size: 14px;
     color: #333;
     outline: none;
-    box-sizing: border-box;
-    transition: background 0.2s;
     min-width: 0;
+    transition: background 0.2s;
 }
 
 .input-field::placeholder {
@@ -315,16 +299,14 @@ export default {
     transform: scale(0.98);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
-    .cadastro-card {
+    .cadastro-page {
         flex-direction: column;
-        width: 95vw;
     }
 
     .left-panel {
         width: 100%;
-        min-height: 200px;
+        min-height: 220px;
     }
 
     .input-row {

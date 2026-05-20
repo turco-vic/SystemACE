@@ -47,7 +47,7 @@
         <span class="nav-label">Cadastro de EPI</span>
       </router-link>
 
-      <router-link to="/solicitacoes" class="nav-item" :class="{ active: $route.path === '/solicitacoes' }"
+      <router-link to="/gerenciar-solicitacoes" class="nav-item" :class="{ active: $route.path === '/gerenciar-solicitacoes' }"
         title="Solicitações">
         <span class="nav-icon">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">

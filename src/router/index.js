@@ -11,6 +11,7 @@ import GerenciarSolicitacoes from '../views/GerenciarSolicitacoes.vue'
 import MinhasSolicitacoes from '../views/MinhasSolicitacoes.vue'
 import Alunos from '../views/Alunos.vue'
 import CadastroAluno from '../views/CadastroAluno.vue'
+import Contato from "../views/Contato.vue"
 
 const routes = [
 
@@ -59,8 +60,10 @@ const routes = [
         path: "/CadastroAluno",
         component: CadastroAluno    
     },
-    
-
+    {
+        path: "/contato",
+        component: Contato
+    }
 ]
 
 const router = createRouter({

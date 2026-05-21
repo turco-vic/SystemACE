@@ -24,28 +24,20 @@
     <nav class="sidebar-nav">
       <div class="nav-section-label">MENU</div>
 
-      <router-link to="/dashboard" class="nav-item" :class="{ active: $route.path === '/dashboard' }" title="Dashboard">
+      <router-link to="/alunos" class="nav-item" :class="{ active: $route.path === '/alunos' }" title="alunos">
         <span class="nav-label">Dashboard</span>
       </router-link>
-
-      <router-link to="/epis" class="nav-item" :class="{ active: $route.path === '/epis' }" title="Cadastro de EPI">
-        <span class="nav-label">Cadastro de EPI</span>
+      <router-link to="/CatalogoEpis" class="nav-item" :class="{ active: $route.path === '/CatalogoEpis' }" title="Cadastro de EPI">
+        <span class="nav-label">Catalogo de Epis</span>
       </router-link>
-      <router-link to="/CadastroAluno" class="nav-item" :class="{ active: $route.path === '/CadastroAluno' }" title="Cadastro de Aluno">
-        <span class="nav-label">Cadastro de Alunos</span>
-      </router-link>
-      <router-link to="/CadastroFuncionario" class="nav-item" :class="{ active: $route.path === '/CadastroFuncionario' }" title="Cadastro de Funcionario">
-        <span class="nav-label">Cadastro de Funcionario</span>
-      </router-link>
-      <router-link to="/gerenciar-solicitacoes" class="nav-item" :class="{ active: $route.path === '/gerenciar-solicitacoes' }"
-        title="Solicitações">
-        <span class="nav-label">Solicitações</span>
+      <router-link to="/minhas-solicitacoes" class="nav-item" :class="{ active: $route.path === '/minhas-solicitacoes' }" title="Cadastro de Funcionario">
+        <span class="nav-label">Minhas Solicitações</span>
       </router-link>
     </nav>
 
     <div class="sidebar-bottom">
       <div class="nav-divider"></div>
-      <router-link to="/Perfil" class="nav-item" :class="{ active: $route.path === '/Perfil' }">
+      <router-link to="/PerfilAluno" class="nav-item" :class="{ active: $route.path === '/PerfilAluno' }">
         <span class="nav-label">Perfil</span>
       </router-link>
     </div>

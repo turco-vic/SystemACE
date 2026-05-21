@@ -10,8 +10,7 @@ import Epis from "../views/Epis.vue"
 import GerenciarSolicitacoes from '../views/GerenciarSolicitacoes.vue'
 import MinhasSolicitacoes from '../views/MinhasSolicitacoes.vue'
 import Alunos from '../views/Alunos.vue'
-import Dashboard from '../views/Dashboard.vue'
-import DashboardAluno from '../views/DashboardAluno.vue'
+import CadastroAluno from '../views/CadastroAluno.vue'
 
 const routes = [
 
@@ -57,8 +56,8 @@ const routes = [
         component: Alunos
     },
     {
-        path: "/dashboard-aluno",
-        component: DashboardAluno
+        path: "/CadastroAluno",
+        component: CadastroAluno    
     },
     
 

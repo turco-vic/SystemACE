@@ -147,10 +147,10 @@
     </div>
   </div>
 </template>
-
+'
 <script setup>
 
-import SidebarACE from '../SidebarACE.vue'
+import SidebarACE from '../components/sidebarace.vue'
 import { ref, computed, onMounted } from 'vue'
 import { useSupabase } from '../composables/useSupabase'
 

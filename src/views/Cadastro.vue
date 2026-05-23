@@ -15,13 +15,20 @@
             <div class="form-area">
                 <h1 class="form-title">Crie sua conta</h1>
 
+                <div v-if="errorMsg" class="error-banner">{{ errorMsg }}</div>
+                <div v-if="successMsg" class="success-banner">{{ successMsg }}</div>
+
                 <div class="input-row">
                     <input v-model="nome" type="text" placeholder="Nome" class="input-field" />
                     <input v-model="sobrenome" type="text" placeholder="Sobrenome" class="input-field" />
                 </div>
 
                 <div class="input-row">
+                    <input v-model="cpf" type="text" placeholder="CPF" class="input-field" />
                     <input v-model="email" type="email" placeholder="Email" class="input-field" />
+                </div>
+
+                <div class="input-row">
                     <div class="password-wrapper">
                         <input v-model="senha" :type="showPassword ? 'text' : 'password'" placeholder="Senha"
                             class="input-field" autocomplete="new-password" />
@@ -50,9 +57,9 @@
                     </label>
                 </div>
 
-                <button class="btn-cadastrar" :class="{ active: aceitouTermos }" :disabled="!aceitouTermos"
-                    @click="handleCadastro">
-                    Cadastrar-se
+                <button class="btn-cadastrar" :class="{ active: aceitouTermos && !loading }"
+                    :disabled="!aceitouTermos || loading" @click="handleCadastro">
+                    {{ loading ? 'Cadastrando...' : 'Cadastrar-se' }}
                 </button>
             </div>
         </div>
@@ -61,18 +68,53 @@
 </template>
 
 <script>
+import { useSupabase } from '../composables/useSupabase'
+import { useRouter } from 'vue-router'
+
 export default {
     name: 'Cadastro',
+    setup() {
+        const { signUp } = useSupabase()
+        const router = useRouter()
+        return { signUp, router }
+    },
     data() {
         return {
-            nome: '', sobrenome: '', email: '', senha: '',
+            nome: '', sobrenome: '', cpf: '', email: '', senha: '',
             showPassword: false, aceitouTermos: false,
+            loading: false, errorMsg: '', successMsg: ''
         }
     },
     methods: {
-        handleCadastro() {
+        async handleCadastro() {
             if (!this.aceitouTermos) return
-            console.log('Cadastro:', this.nome, this.email)
+            if (!this.nome || !this.email || !this.senha) {
+                this.errorMsg = 'Nome, email e senha são obrigatórios.'
+                return
+            }
+            if (this.senha.length < 6) {
+                this.errorMsg = 'A senha deve ter no mínimo 6 caracteres.'
+                return
+            }
+
+            this.loading = true
+            this.errorMsg = ''
+            this.successMsg = ''
+
+            try {
+                await this.signUp(this.email, this.senha, {
+                    type: 'aluno',
+                    nome: this.nome,
+                    sobrenome: this.sobrenome,
+                    cpf: this.cpf
+                })
+                this.successMsg = 'Conta criada! Verifique seu email para confirmar o cadastro.'
+                setTimeout(() => this.router.push('/login'), 3000)
+            } catch (e) {
+                this.errorMsg = e.message || 'Erro ao criar conta.'
+            } finally {
+                this.loading = false
+            }
         }
     }
 }
@@ -184,6 +226,28 @@ export default {
     font-weight: 700;
     color: #1a1a1a;
     margin-bottom: 6px;
+    text-align: center;
+}
+
+.error-banner {
+    width: 100%;
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.success-banner {
+    width: 100%;
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
     text-align: center;
 }
 

@@ -7,13 +7,15 @@
             <div class="form-area">
                 <h1 class="form-title">Entre com sua conta!</h1>
 
+                <div v-if="errorMsg" class="error-banner">{{ errorMsg }}</div>
+
                 <div class="input-group">
                     <input v-model="email" type="email" placeholder="Email" class="input-field" autocomplete="email" />
                 </div>
 
                 <div class="input-group password-group">
                     <input v-model="senha" :type="showPassword ? 'text' : 'password'" placeholder="Senha"
-                        class="input-field" autocomplete="current-password" />
+                        class="input-field" autocomplete="current-password" @keyup.enter="handleLogin" />
                     <button class="toggle-password" @click="showPassword = !showPassword" type="button">
                         <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -31,7 +33,9 @@
                     </button>
                 </div>
 
-                <button class="btn-entrar" @click="handleLogin">Entrar</button>
+                <button class="btn-entrar" @click="handleLogin" :disabled="loading">
+                    {{ loading ? 'Entrando...' : 'Entrar' }}
+                </button>
             </div>
         </div>
 
@@ -48,14 +52,40 @@
 </template>
 
 <script>
+import { useSupabase } from '../composables/useSupabase'
+import { useRouter } from 'vue-router'
+
 export default {
     name: 'Login',
+    setup() {
+        const { signIn } = useSupabase()
+        const router = useRouter()
+        return { signIn, router }
+    },
     data() {
-        return { email: '', senha: '', showPassword: false }
+        return { email: '', senha: '', showPassword: false, loading: false, errorMsg: '' }
     },
     methods: {
-        handleLogin() {
-            console.log('Login:', this.email)
+        async handleLogin() {
+            if (!this.email || !this.senha) {
+                this.errorMsg = 'Preencha email e senha.'
+                return
+            }
+            this.loading = true
+            this.errorMsg = ''
+            try {
+                const result = await this.signIn(this.email, this.senha)
+                const tipo = result.tipo
+                if (tipo === 'funcionario' || tipo === 'admin') {
+                    this.router.push('/dashboard')
+                } else {
+                    this.router.push('/alunos')
+                }
+            } catch (e) {
+                this.errorMsg = 'Email ou senha inválidos.'
+            } finally {
+                this.loading = false
+            }
         }
     }
 }
@@ -103,6 +133,18 @@ export default {
     font-weight: 700;
     color: #1a1a1a;
     margin-bottom: 10px;
+    text-align: center;
+}
+
+.error-banner {
+    width: 100%;
+    max-width: 320px;
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
     text-align: center;
 }
 
@@ -164,12 +206,17 @@ export default {
     transition: background 0.2s, transform 0.1s;
 }
 
-.btn-entrar:hover {
+.btn-entrar:hover:not(:disabled) {
     background: #2a96e8;
 }
 
-.btn-entrar:active {
+.btn-entrar:active:not(:disabled) {
     transform: scale(0.98);
+}
+
+.btn-entrar:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .right-panel {

@@ -11,6 +11,9 @@ import GerenciarSolicitacoes from '../views/GerenciarSolicitacoes.vue'
 import MinhasSolicitacoes from '../views/MinhasSolicitacoes.vue'
 import Alunos from '../views/Alunos.vue'
 import CadastroAluno from '../views/CadastroAluno.vue'
+import PerfilAluno from '../views/PerfilAluno.vue'
+import PerfilFuncionario from '../views/PerfilFuncionario.vue'
+import CadastrarFuncionario from '../views/CadastrarFuncionario.vue'
 
 const routes = [
 
@@ -59,7 +62,27 @@ const routes = [
         path: "/CadastroAluno",
         component: CadastroAluno    
     },
+
+    {
+        
+        path: "/PerfilAluno",
+        component: PerfilAluno
+
+    },
+
+    {
+
+        path: "/PerfilFuncionario",
+        component: PerfilFuncionario
+    },
     
+    {
+
+        path: "/CadastroFuncionario",
+        component: CadastrarFuncionario
+    }
+
+
 
 ]
 

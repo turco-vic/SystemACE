@@ -76,8 +76,13 @@ async function handleLogin() {
     }
     loading.value = true
     try {
-        await signIn(email.value, senha.value)
-        router.push('/dashboard')
+        const result = await signIn(email.value, senha.value)
+        const tipo = result.tipo
+        if (tipo === 'funcionario' || tipo === 'admin') {
+            router.push('/dashboard')
+        } else {
+            router.push('/dashboard')
+        }
     } catch (e) {
         if (e.message?.includes('Invalid login credentials')) {
             erro.value = 'Email ou senha incorretos.'

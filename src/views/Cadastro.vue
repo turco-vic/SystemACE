@@ -18,21 +18,18 @@
                 <p v-if="erro" class="msg msg--erro">{{ erro }}</p>
                 <p v-if="sucesso" class="msg msg--ok">{{ sucesso }}</p>
 
-                <!-- Nome + Sobrenome -->
                 <div class="input-row">
                     <input v-model="nome" type="text" placeholder="Nome *" class="input-field" :disabled="loading" />
                     <input v-model="sobrenome" type="text" placeholder="Sobrenome" class="input-field"
                         :disabled="loading" />
                 </div>
 
-                <!-- Email + CPF -->
                 <div class="input-row">
                     <input v-model="email" type="email" placeholder="Email *" class="input-field" :disabled="loading" />
                     <input v-model="cpf" type="text" placeholder="CPF * (000.000.000-00)" class="input-field"
                         :disabled="loading" @input="formatarCPF" maxlength="14" />
                 </div>
 
-                <!-- Data nascimento + Telefone -->
                 <div class="input-row">
                     <div class="input-wrapper">
                         <label class="field-label">Data de Nascimento</label>
@@ -43,7 +40,6 @@
                         :disabled="loading" @input="formatarTelefone" maxlength="15" />
                 </div>
 
-                <!-- Senha + Confirmar -->
                 <div class="input-row">
                     <div class="password-wrapper">
                         <input v-model="senha" :type="showPassword ? 'text' : 'password'"
@@ -157,7 +153,6 @@ async function handleCadastro() {
 
     loading.value = true
     try {
-        // Trigger handle_new_user faz o insert na tabela aluno automaticamente
         const { error: authError } = await supabase.auth.signUp({
             email: email.value,
             password: senha.value,
@@ -172,7 +167,7 @@ async function handleCadastro() {
         })
         if (authError) throw authError
 
-        // Atualiza data_nascimento e telefone separadamente (não passam pela trigger)
+        // Atualiza data_nascimento e telefone (não passam pela trigger)
         if (dataNascimento.value || telefone.value) {
             const { data: alunoData } = await supabase
                 .from('aluno')
@@ -188,8 +183,8 @@ async function handleCadastro() {
             }
         }
 
-        sucesso.value = 'Conta criada! Verifique seu email para confirmar o cadastro.'
-        setTimeout(() => router.push('/login'), 3000)
+        sucesso.value = 'Conta criada com sucesso! Redirecionando para o login...'
+        setTimeout(() => router.push('/login'), 2500)
 
     } catch (e) {
         if (e.message?.includes('already registered') || e.message?.includes('already been registered')) {
@@ -220,7 +215,6 @@ async function handleCadastro() {
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* LEFT */
 .left-panel {
     width: 36%;
     background: linear-gradient(160deg, #62c3f8 0%, #3a9de8 100%);
@@ -291,7 +285,6 @@ async function handleCadastro() {
     transform: scale(0.98);
 }
 
-/* RIGHT */
 .right-panel {
     flex: 1;
     background: #fff;
@@ -470,13 +463,13 @@ async function handleCadastro() {
 }
 
 @media (max-width: 900px) {
+    .cadastro-page {
+        flex-direction: column;
+    }
+
     .left-panel {
         width: 100%;
         min-height: 200px;
-    }
-
-    .cadastro-page {
-        flex-direction: column;
     }
 
     .right-panel {

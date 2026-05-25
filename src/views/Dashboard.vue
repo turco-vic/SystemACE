@@ -23,41 +23,67 @@
 
         <!-- Stat Cards -->
         <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-header">
-              <span class="stat-label">TOTAL DE EPIs</span>
-              <span class="stat-icon-wrap total">📦</span>
+          <template v-if="isAdmin">
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-label">TOTAL DE EPIs</span>
+                <span class="stat-icon-wrap total">📦</span>
+              </div>
+              <div class="stat-number">{{ stats.total }}</div>
+              <div class="stat-sub">Todos os EPIs registrados</div>
             </div>
-            <div class="stat-number">{{ stats.total }}</div>
-            <div class="stat-sub">Todos os EPIs registrados</div>
-          </div>
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-label">DISPONÍVEL</span>
+                <span class="stat-icon-wrap avail">✓</span>
+              </div>
+              <div class="stat-number">{{ stats.disponivel }}</div>
+              <div class="stat-sub">{{ stats.percentualDisponibilidade }}% do total</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-label">EM USO</span>
+                <span class="stat-icon-wrap inuse">⚙️</span>
+              </div>
+              <div class="stat-number">{{ stats.emUso }}</div>
+              <div class="stat-sub">{{ stats.emUso }} entregas ativas</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-label">VENCIDOS / ALERTA</span>
+                <span class="stat-icon-wrap alert">⚠️</span>
+              </div>
+              <div class="stat-number">{{ alertas.length }}</div>
+              <div class="stat-sub warn">⚠️ Requer atenção</div>
+            </div>
+          </template>
 
-          <div class="stat-card">
-            <div class="stat-header">
-              <span class="stat-label">DISPONÍVEL</span>
-              <span class="stat-icon-wrap avail">✓</span>
+          <template v-else>
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-label">EPIs DISPONÍVEIS</span>
+                <span class="stat-icon-wrap avail">✓</span>
+              </div>
+              <div class="stat-number">{{ stats.disponivel }}</div>
+              <div class="stat-sub">Disponíveis para solicitação</div>
             </div>
-            <div class="stat-number">{{ stats.disponivel }}</div>
-            <div class="stat-sub">{{ stats.percentualDisponibilidade }}% do total</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-header">
-              <span class="stat-label">EM USO</span>
-              <span class="stat-icon-wrap inuse">⚙️</span>
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-label">MEUS EPIs</span>
+                <span class="stat-icon-wrap inuse">⚙️</span>
+              </div>
+              <div class="stat-number">{{ meusEPIs }}</div>
+              <div class="stat-sub">EPIs em uso</div>
             </div>
-            <div class="stat-number">{{ stats.emUso }}</div>
-            <div class="stat-sub">{{ stats.emUso }} entregas ativas</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-header">
-              <span class="stat-label">VENCIDOS / ALERTA</span>
-              <span class="stat-icon-wrap alert">⚠️</span>
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-label">SOLICITAÇÕES</span>
+                <span class="stat-icon-wrap total">📋</span>
+              </div>
+              <div class="stat-number">{{ minhasSolicitacoes }}</div>
+              <div class="stat-sub">Total de solicitações</div>
             </div>
-            <div class="stat-number">{{ alertas.length }}</div>
-            <div class="stat-sub warn">⚠️ Requer atenção</div>
-          </div>
+          </template>
         </div>
 
         <!-- Middle grid -->
@@ -226,6 +252,8 @@ const estoque = ref([])
 const alertas = ref([])
 const funcionariosEPIs = ref([])
 const alunosEPIs = ref([])
+const meusEPIs = ref(0)
+const minhasSolicitacoes = ref(0)
 
 const formatDate = (date) => {
   if (!date) return '---'
@@ -248,10 +276,32 @@ onMounted(async () => {
     stats.value = await getDashboardStats()
     estoque.value = await getEstoquePerTipo()
     alertas.value = await alertasEPIs()
+
     if (isAdmin.value) {
       entregasRecentes.value = await getEntregasRecentes(5)
       funcionariosEPIs.value = await getFuncionarioComEPIs()
       alunosEPIs.value = await getAlunoComEPIsAtrasados()
+    } else {
+      // Busca dados do aluno logado
+      const { data: alunoData } = await supabaseClient
+        .from('aluno')
+        .select('idaluno')
+        .eq('auth_id', session.user.id)
+        .single()
+
+      if (alunoData?.idaluno) {
+        const { data: epis } = await supabaseClient
+          .from('aluno_has_epis')
+          .select('id_entrega_aluno')
+          .eq('aluno_id', alunoData.idaluno)
+        meusEPIs.value = epis?.length || 0
+
+        const { data: sols } = await supabaseClient
+          .from('solicitacoes')
+          .select('idsolicitacoes')
+          .eq('aluno_id', alunoData.idaluno)
+        minhasSolicitacoes.value = sols?.length || 0
+      }
     }
   } catch (e) {
     console.error('Erro ao carregar dashboard:', e)
@@ -341,21 +391,6 @@ const exportarPDF = () => {
 
   doc.save(`DashEPI_${new Date().toISOString().split('T')[0]}.pdf`)
 }
-
-onMounted(async () => {
-  try {
-    stats.value = await getDashboardStats()
-    estoque.value = await getEstoquePerTipo()
-    alertas.value = await alertasEPIs()
-    if (isAdmin.value) {
-      entregasRecentes.value = await getEntregasRecentes(5)
-      funcionariosEPIs.value = await getFuncionarioComEPIs()
-      alunosEPIs.value = await getAlunoComEPIsAtrasados()
-    }
-  } catch (e) {
-    console.error('Erro ao carregar dashboard:', e)
-  }
-})
 </script>
 
 <style scoped>

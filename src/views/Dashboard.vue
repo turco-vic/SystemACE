@@ -1,7 +1,7 @@
 <template>
   <div class="app-layout">
     <!-- Sidebar -->
-    <SidebarACE />
+    <component :is="isAdmin ? SidebarACE : SidebarAluno" />
 
     <!-- Main Content -->
     <div class="main-wrapper">
@@ -195,9 +195,9 @@
 
 <script setup>
 import SidebarACE from '../components/SidebarACE.vue'
-import { ref, onMounted } from 'vue'
+import SidebarAluno from '../components/SidebarAluno.vue'
+import { ref, onMounted, computed } from 'vue'
 import { useSupabase } from '../composables/useSupabase'
-import { jsPDF } from 'jspdf'
 
 const {
   getDashboardStats,
@@ -206,7 +206,13 @@ const {
   alertasEPIs,
   getFuncionarioComEPIs,
   getAlunoComEPIsAtrasados,
+  getTipoUsuario,
 } = useSupabase()
+
+const isAdmin = computed(() => {
+  const tipo = getTipoUsuario()
+  return tipo === 'funcionario' || tipo === 'admin'
+})
 
 const stats = ref({ total: 0, disponivel: 0, emUso: 0, percentualDisponibilidade: 0 })
 const entregasRecentes = ref([])

@@ -128,15 +128,31 @@ const iniciais = computed(() => {
 
 const carregarPerfil = async () => {
   try {
-    const email = session.value?.user?.email
-    if (!email) throw new Error('Sessão inválida.')
-    const { data, error } = await supabase
+    // Aguarda sessão estar disponível
+    const { data: { session: s } } = await supabase.auth.getSession()
+    if (!s?.user) throw new Error('Sessão inválida.')
+
+    // Tenta por auth_id primeiro (mais confiável)
+    let { data, error } = await supabase
       .from('aluno')
       .select('*')
-      .eq('email', email)
+      .eq('auth_id', s.user.id)
       .maybeSingle()
+
+    // Fallback por email se auth_id não encontrar
+    if (!data && !error) {
+      const res = await supabase
+        .from('aluno')
+        .select('*')
+        .eq('email', s.user.email)
+        .maybeSingle()
+      data = res.data
+      error = res.error
+    }
+
     if (error) throw error
     if (!data) throw new Error('Perfil não encontrado. Verifique se seu cadastro foi concluído.')
+
     aluno.value = data
     form.value = { ...data }
   } catch (e) {
@@ -293,7 +309,7 @@ onMounted(carregarPerfil)
   background: white;
   border-radius: 12px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   padding: 1.5rem;
 }
 
@@ -446,8 +462,14 @@ onMounted(carregarPerfil)
   transition: background 0.2s;
 }
 
-.btn-primary:hover:not(:disabled) { background: #1d4ed8; }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 .btn-secondary {
   padding: 9px 20px;
@@ -462,7 +484,10 @@ onMounted(carregarPerfil)
   transition: all 0.2s;
 }
 
-.btn-secondary:hover { border-color: #2563eb; color: #2563eb; }
+.btn-secondary:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
 
 .divider {
   border: none;
@@ -489,7 +514,12 @@ onMounted(carregarPerfil)
 }
 
 @media (max-width: 768px) {
-  .profile-layout { grid-template-columns: 1fr; }
-  .form-grid { grid-template-columns: 1fr; }
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

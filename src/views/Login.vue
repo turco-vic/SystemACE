@@ -7,13 +7,17 @@
             <div class="form-area">
                 <h1 class="form-title">Entre com sua conta!</h1>
 
+                <p v-if="erro" class="msg msg--erro">{{ erro }}</p>
+
                 <div class="input-group">
-                    <input v-model="email" type="email" placeholder="Email" class="input-field" autocomplete="email" />
+                    <input v-model="email" type="email" placeholder="Email" class="input-field" autocomplete="email"
+                        :disabled="loading" @keyup.enter="handleLogin" />
                 </div>
 
                 <div class="input-group password-group">
                     <input v-model="senha" :type="showPassword ? 'text' : 'password'" placeholder="Senha"
-                        class="input-field" autocomplete="current-password" />
+                        class="input-field" autocomplete="current-password" :disabled="loading"
+                        @keyup.enter="handleLogin" />
                     <button class="toggle-password" @click="showPassword = !showPassword" type="button">
                         <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -31,7 +35,10 @@
                     </button>
                 </div>
 
-                <button class="btn-entrar" @click="handleLogin">Entrar</button>
+                <button class="btn-entrar" @click="handleLogin" :disabled="loading">
+                    <span v-if="loading" class="spinner"></span>
+                    <span v-else>Entrar</span>
+                </button>
             </div>
         </div>
 
@@ -47,16 +54,40 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: 'Login',
-    data() {
-        return { email: '', senha: '', showPassword: false }
-    },
-    methods: {
-        handleLogin() {
-            console.log('Login:', this.email)
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useSupabase } from '../composables/useSupabase'
+
+const router = useRouter()
+const { signIn } = useSupabase()
+
+const email = ref('')
+const senha = ref('')
+const showPassword = ref(false)
+const loading = ref(false)
+const erro = ref('')
+
+async function handleLogin() {
+    erro.value = ''
+    if (!email.value || !senha.value) {
+        erro.value = 'Preencha email e senha.'
+        return
+    }
+    loading.value = true
+    try {
+        await signIn(email.value, senha.value)
+        router.push('/dashboard')
+    } catch (e) {
+        if (e.message?.includes('Invalid login credentials')) {
+            erro.value = 'Email ou senha incorretos.'
+        } else if (e.message?.includes('Email not confirmed')) {
+            erro.value = 'Confirme seu email antes de entrar.'
+        } else {
+            erro.value = 'Erro ao entrar. Tente novamente.'
         }
+    } finally {
+        loading.value = false
     }
 }
 </script>
@@ -106,6 +137,21 @@ export default {
     text-align: center;
 }
 
+.msg {
+    width: 100%;
+    max-width: 320px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.msg--erro {
+    background: #fff0f0;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+}
+
 .input-group {
     width: 100%;
     max-width: 320px;
@@ -125,6 +171,11 @@ export default {
     color: #333;
     outline: none;
     transition: background 0.2s;
+}
+
+.input-field:disabled {
+    opacity: .65;
+    cursor: not-allowed;
 }
 
 .input-field::placeholder {
@@ -161,15 +212,40 @@ export default {
     border-radius: 999px;
     cursor: pointer;
     margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     transition: background 0.2s, transform 0.1s;
 }
 
-.btn-entrar:hover {
+.btn-entrar:hover:not(:disabled) {
     background: #2a96e8;
 }
 
-.btn-entrar:active {
+.btn-entrar:active:not(:disabled) {
     transform: scale(0.98);
+}
+
+.btn-entrar:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, .4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .right-panel {
@@ -210,13 +286,13 @@ export default {
 .right-title {
     font-size: 32px;
     font-weight: 700;
-    color: #ffffff;
+    color: #fff;
     margin-bottom: 28px;
 }
 
 .btn-cadastrar {
     padding: 13px 48px;
-    background: #ffffff;
+    background: #fff;
     color: #3a9de8;
     font-size: 15px;
     font-weight: 600;

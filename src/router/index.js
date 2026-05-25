@@ -63,28 +63,18 @@ const routes = [
         path: "/CadastroAluno",
         component: CadastroAluno    
     },
-
-    {
-        
+    {  
         path: "/PerfilAluno",
         component: PerfilAluno
-
     },
-
     {
-
         path: "/PerfilFuncionario",
         component: PerfilFuncionario
     },
-    
     {
-
         path: "/CadastroFuncionario",
         component: CadastrarFuncionario
-    }
-
-
-
+    },
     {
         path: "/contato",
         component: Contato

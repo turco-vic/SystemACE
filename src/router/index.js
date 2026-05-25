@@ -14,6 +14,7 @@ import CadastroAluno from '../views/CadastroAluno.vue'
 import PerfilAluno from '../views/PerfilAluno.vue'
 import PerfilFuncionario from '../views/PerfilFuncionario.vue'
 import CadastrarFuncionario from '../views/CadastrarFuncionario.vue'
+import Contato from "../views/Contato.vue"
 
 const routes = [
 
@@ -84,6 +85,10 @@ const routes = [
 
 
 
+    {
+        path: "/contato",
+        component: Contato
+    }
 ]
 
 const router = createRouter({

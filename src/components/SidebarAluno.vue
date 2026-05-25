@@ -24,13 +24,15 @@
     <nav class="sidebar-nav">
       <div class="nav-section-label">MENU</div>
 
-      <router-link to="/alunos" class="nav-item" :class="{ active: $route.path === '/alunos' }" title="alunos">
+      <router-link to="/dashboard" class="nav-item" :class="{ active: $route.path === '/dashboard' }" title="Dashboard">
         <span class="nav-label">Dashboard</span>
       </router-link>
-      <router-link to="/CatalogoEpis" class="nav-item" :class="{ active: $route.path === '/CatalogoEpis' }" title="Cadastro de EPI">
+      <router-link to="/CatalogoEpis" class="nav-item" :class="{ active: $route.path === '/CatalogoEpis' }"
+        title="Cadastro de EPI">
         <span class="nav-label">Catalogo de Epis</span>
       </router-link>
-      <router-link to="/minhas-solicitacoes" class="nav-item" :class="{ active: $route.path === '/minhas-solicitacoes' }" title="Cadastro de Funcionario">
+      <router-link to="/minhas-solicitacoes" class="nav-item"
+        :class="{ active: $route.path === '/minhas-solicitacoes' }" title="Cadastro de Funcionario">
         <span class="nav-label">Minhas Solicitações</span>
       </router-link>
     </nav>
@@ -45,17 +47,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from "vue";
 
-const isCollapsed = ref(false)
+const isCollapsed = ref(false);
 
 const toggleCollapse = () => {
-  isCollapsed.value = !isCollapsed.value
-}
+  isCollapsed.value = !isCollapsed.value;
+};
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap");
 
 .sidebar {
   width: 220px;
@@ -65,7 +67,7 @@ const toggleCollapse = () => {
   display: flex;
   flex-direction: column;
   transition: width 0.25s ease;
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: "IBM Plex Sans", sans-serif;
   position: relative;
   flex-shrink: 0;
 }
@@ -94,7 +96,9 @@ const toggleCollapse = () => {
   color: #1e293b;
   white-space: nowrap;
   overflow: hidden;
-  transition: opacity 0.2s ease, width 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    width 0.2s ease;
 }
 
 .collapsed .logo-text {
@@ -112,12 +116,14 @@ const toggleCollapse = () => {
   border-radius: 4px;
   display: flex;
   align-items: center;
-  transition: color 0.2s, background 0.2s;
+  transition:
+    color 0.2s,
+    background 0.2s;
   flex-shrink: 0;
 }
 
 .collapse-btn:hover {
-  color: #2563EB;
+  color: #2563eb;
   background: #eff6ff;
 }
 
@@ -174,12 +180,12 @@ const toggleCollapse = () => {
 
 .nav-item.active {
   background-color: #eff6ff;
-  color: #2563EB;
+  color: #2563eb;
 }
 
 .nav-item.active .nav-icon svg path,
 .nav-item.active .nav-icon svg rect {
-  stroke: #2563EB;
+  stroke: #2563eb;
 }
 
 .nav-icon {
@@ -195,7 +201,9 @@ const toggleCollapse = () => {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: opacity 0.2s, width 0.2s;
+  transition:
+    opacity 0.2s,
+    width 0.2s;
 }
 
 .collapsed .nav-label {

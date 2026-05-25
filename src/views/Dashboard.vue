@@ -1,17 +1,14 @@
 <template>
   <div class="app-layout">
-    <!-- Sidebar -->
     <component :is="isAdmin ? SidebarACE : SidebarAluno" />
 
-    <!-- Main Content -->
     <div class="main-wrapper">
-      <!-- Top Header -->
       <header class="top-header">
         <div class="header-left">
           <h1 class="page-title">Dashboard</h1>
         </div>
         <div class="header-right">
-          <button class="btn-exportar" @click="exportarPDF">
+          <button v-if="isAdmin" class="btn-exportar" @click="exportarPDF">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M8 1V11M8 11L5 8M8 11L11 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                 stroke-linejoin="round" />
@@ -23,6 +20,7 @@
       </header>
 
       <main class="dashboard-main">
+
         <!-- Stat Cards -->
         <div class="stats-grid">
           <div class="stat-card">
@@ -31,7 +29,7 @@
               <span class="stat-icon-wrap total">📦</span>
             </div>
             <div class="stat-number">{{ stats.total }}</div>
-            <div class="stat-sub">✓ 10 em até esta semana</div>
+            <div class="stat-sub">Todos os EPIs registrados</div>
           </div>
 
           <div class="stat-card">
@@ -54,17 +52,16 @@
 
           <div class="stat-card">
             <div class="stat-header">
-              <span class="stat-label">VENCIDOS EM 30 DIAS</span>
+              <span class="stat-label">VENCIDOS / ALERTA</span>
               <span class="stat-icon-wrap alert">⚠️</span>
             </div>
             <div class="stat-number">{{ alertas.length }}</div>
-            <div class="stat-sub warn">⚠️ Ação necessária</div>
+            <div class="stat-sub warn">⚠️ Requer atenção</div>
           </div>
         </div>
 
-        <!-- Middle grid: chart + disponibilidade + atividade -->
+        <!-- Middle grid -->
         <div class="mid-grid">
-          <!-- Estoque por tipo -->
           <div class="card card-estoque">
             <h2 class="card-title">Estoque por Tipo</h2>
             <div class="estoque-list">
@@ -78,7 +75,6 @@
             </div>
           </div>
 
-          <!-- Disponibilidade circular -->
           <div class="card card-circle">
             <h2 class="card-title">Disponibilidade</h2>
             <div class="circle-wrap">
@@ -95,7 +91,6 @@
             <p class="circle-obs">Estoque suficiente. Reavaliar em breve.</p>
           </div>
 
-          <!-- Atividade -->
           <div class="card card-atividade">
             <h2 class="card-title">Atividade</h2>
             <div class="atividade-list">
@@ -118,8 +113,8 @@
           </div>
         </div>
 
-        <!-- Entregas Recentes -->
-        <div class="card card-table">
+        <!-- Entregas Recentes - só admin -->
+        <div v-if="isAdmin" class="card card-table">
           <h2 class="card-title">Entregas Recentes</h2>
           <div class="table-wrap">
             <table class="data-table">
@@ -146,8 +141,8 @@
           </div>
         </div>
 
-        <!-- Devoluções Pendentes -->
-        <div class="card card-table">
+        <!-- Devoluções Pendentes - só admin -->
+        <div v-if="isAdmin" class="card card-table">
           <h2 class="card-title">Devoluções Pendentes</h2>
           <div class="table-wrap">
             <table class="data-table">
@@ -188,6 +183,15 @@
             </table>
           </div>
         </div>
+
+        <!-- Mensagem para aluno -->
+        <div v-if="!isAdmin" class="card card-aluno-msg">
+          <h2 class="card-title">Seus EPIs</h2>
+          <p class="aluno-msg">Acesse <strong>Minhas Solicitações</strong> para ver seus EPIs solicitados e o status de
+            cada um.</p>
+          <router-link to="/minhas-solicitacoes" class="btn-ver-solicitacoes">Ver minhas solicitações</router-link>
+        </div>
+
       </main>
     </div>
   </div>
@@ -196,8 +200,15 @@
 <script setup>
 import SidebarACE from '../components/SidebarACE.vue'
 import SidebarAluno from '../components/SidebarAluno.vue'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
+import { createClient } from '@supabase/supabase-js'
 import { useSupabase } from '../composables/useSupabase'
+import { jsPDF } from 'jspdf'
+
+const supabaseClient = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+)
 
 const {
   getDashboardStats,
@@ -206,14 +217,9 @@ const {
   alertasEPIs,
   getFuncionarioComEPIs,
   getAlunoComEPIsAtrasados,
-  getTipoUsuario,
 } = useSupabase()
 
-const isAdmin = computed(() => {
-  const tipo = getTipoUsuario()
-  return tipo === 'funcionario' || tipo === 'admin'
-})
-
+const isAdmin = ref(false)
 const stats = ref({ total: 0, disponivel: 0, emUso: 0, percentualDisponibilidade: 0 })
 const entregasRecentes = ref([])
 const estoque = ref([])
@@ -232,6 +238,25 @@ const getEstoquePercent = (quantidade) => {
   if (max === 0) return 0
   return (quantidade / max) * 100
 }
+
+onMounted(async () => {
+  const { data: { session } } = await supabaseClient.auth.getSession()
+  const tipo = session?.user?.user_metadata?.tipo
+  isAdmin.value = tipo === 'funcionario' || tipo === 'admin'
+
+  try {
+    stats.value = await getDashboardStats()
+    estoque.value = await getEstoquePerTipo()
+    alertas.value = await alertasEPIs()
+    if (isAdmin.value) {
+      entregasRecentes.value = await getEntregasRecentes(5)
+      funcionariosEPIs.value = await getFuncionarioComEPIs()
+      alunosEPIs.value = await getAlunoComEPIsAtrasados()
+    }
+  } catch (e) {
+    console.error('Erro ao carregar dashboard:', e)
+  }
+})
 
 const exportarPDF = () => {
   const doc = new jsPDF()
@@ -320,11 +345,13 @@ const exportarPDF = () => {
 onMounted(async () => {
   try {
     stats.value = await getDashboardStats()
-    entregasRecentes.value = await getEntregasRecentes(5)
     estoque.value = await getEstoquePerTipo()
     alertas.value = await alertasEPIs()
-    funcionariosEPIs.value = await getFuncionarioComEPIs()
-    alunosEPIs.value = await getAlunoComEPIsAtrasados()
+    if (isAdmin.value) {
+      entregasRecentes.value = await getEntregasRecentes(5)
+      funcionariosEPIs.value = await getFuncionarioComEPIs()
+      alunosEPIs.value = await getAlunoComEPIsAtrasados()
+    }
   } catch (e) {
     console.error('Erro ao carregar dashboard:', e)
   }
@@ -345,7 +372,6 @@ onMounted(async () => {
   font-family: 'IBM Plex Sans', sans-serif;
 }
 
-/* Main wrapper */
 .main-wrapper {
   flex: 1;
   display: flex;
@@ -353,7 +379,6 @@ onMounted(async () => {
   min-width: 0;
 }
 
-/* Top Header */
 .top-header {
   display: flex;
   align-items: center;
@@ -394,7 +419,6 @@ onMounted(async () => {
   transform: translateY(-1px);
 }
 
-/* Main content area */
 .dashboard-main {
   padding: 24px 28px;
   display: flex;
@@ -404,7 +428,6 @@ onMounted(async () => {
   width: 100%;
 }
 
-/* Stats */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -476,14 +499,12 @@ onMounted(async () => {
   color: #ef4444;
 }
 
-/* Middle grid */
 .mid-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 16px;
 }
 
-/* Cards */
 .card {
   background: #ffffff;
   border-radius: 10px;
@@ -500,7 +521,6 @@ onMounted(async () => {
   letter-spacing: 0.4px;
 }
 
-/* Estoque */
 .estoque-list {
   display: flex;
   flex-direction: column;
@@ -543,7 +563,6 @@ onMounted(async () => {
   text-align: right;
 }
 
-/* Circle */
 .card-circle {
   display: flex;
   flex-direction: column;
@@ -604,7 +623,6 @@ onMounted(async () => {
   margin: 0;
 }
 
-/* Atividade */
 .atividade-list {
   display: flex;
   flex-direction: column;
@@ -651,7 +669,6 @@ onMounted(async () => {
   color: #94a3b8;
 }
 
-/* Tables */
 .card-table {
   overflow: hidden;
 }
@@ -732,7 +749,37 @@ onMounted(async () => {
   font-size: 0.875rem;
 }
 
-/* Responsive */
+/* Card aluno */
+.card-aluno-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aluno-msg {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.btn-ver-solicitacoes {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  background: #2563EB;
+  color: #fff;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-ver-solicitacoes:hover {
+  background: #1d4ed8;
+}
+
 @media (max-width: 1200px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);

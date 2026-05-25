@@ -23,7 +23,6 @@ const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
 const rotasAdmin = [
     "/epis",
-    "/dashboard",
     "/CadastroAluno",
     "/CadastroFuncionario",
     "/gerenciar-solicitacoes",
@@ -31,6 +30,7 @@ const rotasAdmin = [
     "/PerfilFuncionario",
     "/estoque",
 ];
+
 const rotasAluno = ["/PerfilAluno", "/minhas-solicitacoes", "/CatalogoEpis"];
 const rotasPublicas = ["/", "/login", "/cadastro", "/sobre", "/contato"];
 

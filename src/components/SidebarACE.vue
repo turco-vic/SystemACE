@@ -45,7 +45,7 @@
 
     <div class="sidebar-bottom">
       <div class="nav-divider"></div>
-      <router-link to="/Perfil" class="nav-item" :class="{ active: $route.path === '/Perfil' }">
+      <router-link to="/PerfilFuncionario" class="nav-item" :class="{ active: $route.path === '/PerfilFuncionario' }">
         <span class="nav-label">Perfil</span>
       </router-link>
     </div>

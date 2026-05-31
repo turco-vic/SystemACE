@@ -2,7 +2,7 @@
     <div class="login-page">
 
         <div class="left-panel">
-            <div class="brand">SystemACE</div>
+            <div class="brand" @click="$router.push('/')">SystemACE</div>
 
             <div class="form-area">
                 <h1 class="form-title">Entre com sua conta!</h1>
@@ -123,6 +123,7 @@ async function handleLogin() {
     font-weight: 700;
     color: #3fa9f5;
     letter-spacing: -0.5px;
+    cursor: pointer;
 }
 
 .form-area {

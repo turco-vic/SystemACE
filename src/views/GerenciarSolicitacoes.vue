@@ -3,11 +3,13 @@
     <SidebarACE />
     
     <div class="main-wrapper">
-      <main class="dashboard-main solicitacoes-admin-main">
-        <div class="page-header">
+      <header class="top-header">
+        <div class="header-left">
           <h1 class="page-title">Gerenciar Solicitações de EPIs</h1>
           <p class="page-subtitle">Analise e aprove ou rejeite as solicitações de empréstimo dos alunos.</p>
         </div>
+      </header>
+      <main class="dashboard-main solicitacoes-admin-main">
 
         <div class="card filters-section">
           <div class="search-box">
@@ -420,7 +422,7 @@ onMounted(() => {
   min-width: 0;
 }
 
-.dashboard-main {
+  dashboard-main {
   padding: 24px 28px;
   display: flex;
   flex-direction: column;
@@ -435,11 +437,20 @@ onMounted(() => {
   margin-bottom: 8px;
 }
 
+.top-header {
+  background: white;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
 .page-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #1e293b;
-  margin: 0 0 4px 0;
+  margin: 0;
 }
 
 .page-subtitle {

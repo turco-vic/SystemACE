@@ -120,20 +120,10 @@
           <div class="card card-atividade">
             <h2 class="card-title">Atividade</h2>
             <div class="atividade-list">
-              <div class="ativ-item">
-                <span class="ativ-dot green"></span>
-                <span class="ativ-text">Entrega realizada</span>
-                <span class="ativ-time">Há 2 horas</span>
-              </div>
-              <div class="ativ-item">
-                <span class="ativ-dot red"></span>
-                <span class="ativ-text">Devolução pendente</span>
-                <span class="ativ-time">4 dias</span>
-              </div>
-              <div class="ativ-item">
-                <span class="ativ-dot yellow"></span>
-                <span class="ativ-text">Inventário atualizado</span>
-                <span class="ativ-time">Há 8 horas</span>
+              <div v-for="(a, idx) in atividades" :key="idx" class="ativ-item">
+                <span class="ativ-dot" :class="a.type === 'entrega' ? 'green' : a.type === 'devolucao' ? 'red' : 'yellow'"></span>
+                <span class="ativ-text">{{ a.text }}</span>
+                <span class="ativ-time">{{ a.time }}</span>
               </div>
             </div>
           </div>
@@ -308,6 +298,49 @@ onMounted(async () => {
   }
 })
 
+// Atividades (renderiza eventos recentes: entregas, devoluções pendentes)
+import { computed, watch } from 'vue'
+const atividades = ref([])
+
+const buildAtividades = () => {
+  const items = []
+  // Prioriza entregas recentes
+  if (entregasRecentes.value && entregasRecentes.value.length) {
+    entregasRecentes.value.slice(0,3).forEach(e => {
+      items.push({
+        type: 'entrega',
+        text: `Entrega: ${e.epis?.nome} — ${e.aluno?.nome} ${e.aluno?.sobrenome}`,
+        time: formatDate(e.data_entrega),
+      })
+    })
+  }
+
+  // Checa devoluções pendentes a partir de alunosEPIs/funcionariosEPIs (se admin)
+  if (isAdmin.value) {
+    const pendentes = []
+    (funcionariosEPIs.value || []).forEach(f => {
+      if (!f.data_devolucao) pendentes.push({ type: 'devolucao', text: `Devolução pendente: ${f.epis?.nome} — ${f.funcionario?.nome}`, time: formatDate(f.data_entrega) })
+    })
+    (alunosEPIs.value || []).forEach(a => {
+      if (!a.data_devolucao) pendentes.push({ type: 'devolucao', text: `Devolução pendente: ${a.epis?.nome} — ${a.aluno?.nome}`, time: formatDate(a.data_entrega) })
+    })
+    // adiciona até completar 3 itens
+    pendentes.slice(0, 3 - items.length).forEach(p => items.push(p))
+  }
+
+  // Fallback: mensagens estáticas se nada
+  if (!items.length) {
+    items.push({ type: 'entrega', text: 'Entrega realizada', time: 'Há pouco' })
+    items.push({ type: 'devolucao', text: 'Devolução pendente', time: '4 dias' })
+    items.push({ type: 'inventario', text: 'Inventário atualizado', time: 'Há 8 horas' })
+  }
+
+  atividades.value = items.slice(0,3)
+}
+
+// Reconstrói atividades quando as fontes mudam
+watch([entregasRecentes, funcionariosEPIs, alunosEPIs], buildAtividades, { immediate: true })
+
 const exportarPDF = () => {
   const doc = new jsPDF()
   const pageWidth = doc.internal.pageSize.getWidth()
@@ -418,7 +451,7 @@ const exportarPDF = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 28px;
+  padding: 1.5rem 2rem;
   background-color: #ffffff;
   border-bottom: 1px solid #e5e9f0;
   position: sticky;
@@ -455,12 +488,13 @@ const exportarPDF = () => {
 }
 
 .dashboard-main {
-  padding: 24px 28px;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 1400px;
+  max-width: 1200px;
   width: 100%;
+  margin: 0 auto;
 }
 
 .stats-grid {

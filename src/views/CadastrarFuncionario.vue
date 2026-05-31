@@ -72,7 +72,7 @@
                   <td class="text-right">
                     <div class="actions-wrapper">
                       <button class="btn-dots" @click.stop="openMenu($event, func)">⋮</button>
-                      <div v-if="activeMenu === func.idfuncionario" class="dropdown-menu">
+                      <div v-if="activeMenu === func.idfuncionario" :class="['dropdown-menu', { 'drop-up': menuUpId === func.idfuncionario }]">
                         <button @click="editarFuncionario(func)" class="dropdown-item">✏️ Editar</button>
                         <button @click="toggleStatus(func)" class="dropdown-item">
                           {{ func.status === 'Ativo' ? '🔴 Desativar' : '🟢 Ativar' }}
@@ -167,6 +167,7 @@ const funcionarios = ref([])
 const searchQuery = ref('')
 const statusFilter = ref('')
 const activeMenu = ref(null)
+const menuUpId = ref(null)
 const showCadastroModal = ref(false)
 const isEditando = ref(false)
 const editandoId = ref(null)
@@ -241,7 +242,18 @@ const salvarFuncionario = async () => {
 }
 
 const openMenu = (event, func) => {
-  activeMenu.value = activeMenu.value === func.idfuncionario ? null : func.idfuncionario
+  const id = func.idfuncionario
+  if (activeMenu.value === id) {
+    activeMenu.value = null
+    menuUpId.value = null
+    return
+  }
+  // calcula espaço disponível abaixo do botão para decidir abrir pra cima
+  const rect = event.currentTarget.getBoundingClientRect()
+  const spaceBelow = window.innerHeight - rect.bottom
+  const openUp = spaceBelow < 180
+  menuUpId.value = openUp ? id : null
+  activeMenu.value = id
 }
 
 const editarFuncionario = (func) => {
@@ -396,7 +408,7 @@ onMounted(carregarFuncionarios)
   cursor: pointer;
 }
 
-.table-card { padding: 0; overflow: hidden; }
+.table-card { padding: 0; overflow: visible; }
 
 .table-responsive { overflow-x: auto; }
 
@@ -492,6 +504,11 @@ onMounted(carregarFuncionarios)
   z-index: 100;
   min-width: 160px;
   overflow: hidden;
+}
+
+.dropdown-menu.drop-up {
+  top: auto;
+  bottom: 110%;
 }
 
 .dropdown-item {

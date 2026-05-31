@@ -68,7 +68,9 @@ const toggleCollapse = () => {
   flex-direction: column;
   transition: width 0.25s ease;
   font-family: "IBM Plex Sans", sans-serif;
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 60;
   flex-shrink: 0;
 }
 
@@ -120,6 +122,8 @@ const toggleCollapse = () => {
     color 0.2s,
     background 0.2s;
   flex-shrink: 0;
+  position: relative;
+  z-index: 70;
 }
 
 .collapse-btn:hover {

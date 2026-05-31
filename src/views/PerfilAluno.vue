@@ -8,6 +8,9 @@
           <h1 class="page-title">Meu Perfil</h1>
           <p class="stat-sub">Gerencie suas informações pessoais.</p>
         </div>
+        <div class="header-right">
+          <button class="btn-logout" @click="deslogar">Sair</button>
+        </div>
       </header>
 
       <main class="content-container">
@@ -104,10 +107,13 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import SidebarAluno from '../components/SidebarAluno.vue'
 import { useSupabase } from '../composables/useSupabase'
 
 const { supabase, session } = useSupabase()
+
+const router = useRouter()
 
 const aluno = ref({})
 const form = ref({})
@@ -243,6 +249,16 @@ const handleFotoChange = async (e) => {
   }
 }
 
+const deslogar = async () => {
+  try {
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
+    router.push('/login')
+  } catch (e) {
+    errorMsg.value = 'Erro ao deslogar: ' + e.message
+  }
+}
+
 onMounted(carregarPerfil)
 </script>
 
@@ -283,6 +299,27 @@ onMounted(carregarPerfil)
   color: #64748b;
   font-size: 0.875rem;
   margin-top: 4px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.btn-logout {
+  padding: 8px 14px;
+  background: transparent;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-logout:hover {
+  border-color: #2563eb;
+  color: #2563eb;
 }
 
 .content-container {

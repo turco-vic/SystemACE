@@ -5,7 +5,6 @@ import Sobre from "../views/Sobre.vue";
 import Login from "../views/Login.vue";
 import Cadastro from "../views/Cadastro.vue";
 import Dashboard from "../views/Dashboard.vue";
-import Estoque from "../views/Estoque.vue";
 import home_ from "../views/Home.vue";
 import Epis from "../views/Epis.vue";
 import GerenciarSolicitacoes from "../views/GerenciarSolicitacoes.vue";
@@ -16,6 +15,7 @@ import PerfilAluno from "../views/PerfilAluno.vue";
 import PerfilFuncionario from "../views/PerfilFuncionario.vue";
 import CadastrarFuncionario from "../views/CadastrarFuncionario.vue";
 import Contato from "../views/Contato.vue";
+import CatalogoEpis from "../views/CatalogoEpis.vue";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -42,11 +42,11 @@ const routes = [
     { path: "/cadastro", component: Cadastro },
     { path: "/dashboard", component: Dashboard },
     { path: "/epis", component: Epis },
-    { path: "/estoque", component: Estoque },
     { path: "/gerenciar-solicitacoes", component: GerenciarSolicitacoes },
     { path: "/minhas-solicitacoes", component: MinhasSolicitacoes },
     { path: "/alunos", component: Alunos },
     { path: "/CadastroAluno", component: CadastroAluno },
+    { path: "/CatalogoEpis", component: CatalogoEpis },
     { path: "/PerfilAluno", component: PerfilAluno },
     { path: "/PerfilFuncionario", component: PerfilFuncionario },
     { path: "/CadastroFuncionario", component: CadastrarFuncionario },

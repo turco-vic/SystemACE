@@ -469,7 +469,7 @@ onMounted(carregarEPIs)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 28px;
+  padding: 1.5rem 2rem;
   background-color: #ffffff;
   border-bottom: 1px solid #e5e9f0;
   position: sticky;
@@ -480,7 +480,7 @@ onMounted(carregarEPIs)
 }
 
 .page-title {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #1e293b;
   margin: 0;
@@ -558,10 +558,13 @@ onMounted(carregarEPIs)
 
 /* Main */
 .epis-main {
-  padding: 24px 28px;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 /* Stats */

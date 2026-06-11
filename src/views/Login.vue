@@ -2,10 +2,27 @@
     <div class="login-page">
 
         <div class="left-panel">
-            <div class="brand" @click="$router.push('/')">SystemACE</div>
+            <!-- Brand no topo -->
+            <div class="brand" @click="$router.push('/')">
+                <div class="brand__logo">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"
+                            fill="white" />
+                        <circle cx="12" cy="13" r="2.5" fill="none" stroke="white" stroke-width="1.5" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="brand__name">SystemACE</p>
+                    <p class="brand__sub">EPI DASHBOARD</p>
+                </div>
+            </div>
 
             <div class="form-area">
-                <h1 class="form-title">Entre com sua conta!</h1>
+                <!-- Headline da área -->
+                <div class="form-header">
+                    <h1 class="form-title">Bem-vindo de volta</h1>
+                    <p class="form-sub">Entre com suas credenciais para acessar o sistema.</p>
+                </div>
 
                 <p v-if="erro" class="msg msg--erro">{{ erro }}</p>
 
@@ -39,6 +56,24 @@
                     <span v-if="loading" class="spinner"></span>
                     <span v-else>Entrar</span>
                 </button>
+
+                <!-- Stats âncora visual -->
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat__num">NR-6</span>
+                        <span class="stat__label">Conformidade</span>
+                    </div>
+                    <div class="stat__divider"></div>
+                    <div class="stat">
+                        <span class="stat__num">100%</span>
+                        <span class="stat__label">Rastreabilidade</span>
+                    </div>
+                    <div class="stat__divider"></div>
+                    <div class="stat">
+                        <span class="stat__num">SENAI</span>
+                        <span class="stat__label">Roberto Mange</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -46,7 +81,15 @@
             <div class="circle circle-top"></div>
             <div class="circle circle-bottom"></div>
             <div class="right-content">
+                <div class="right-icon">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"
+                            fill="rgba(255,255,255,0.9)" />
+                        <circle cx="12" cy="13" r="2.5" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" />
+                    </svg>
+                </div>
                 <h2 class="right-title">Novo aqui?</h2>
+                <p class="right-sub">Crie sua conta e gerencie seus EPIs com segurança e praticidade.</p>
                 <button class="btn-cadastrar" @click="$router.push('/cadastro')">Cadastrar-se</button>
             </div>
         </div>
@@ -107,45 +150,88 @@ async function handleLogin() {
 .login-page {
     display: flex;
     min-height: 100vh;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Inter', 'DM Sans', 'Segoe UI', sans-serif;
 }
 
+/* ── Painel esquerdo ─────────────────────────────── */
 .left-panel {
     flex: 1;
     background: #ffffff;
     display: flex;
     flex-direction: column;
-    padding: 40px 50px;
+    padding: 40px 56px;
 }
 
+/* Brand */
 .brand {
-    font-size: 22px;
-    font-weight: 700;
-    color: #3fa9f5;
-    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     cursor: pointer;
+    width: fit-content;
 }
 
+.brand__logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(140deg, #1E3D58 0%, #2A567C 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(30, 61, 88, .2);
+}
+
+.brand__name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1E3D58;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+}
+
+.brand__sub {
+    font-size: 9px;
+    font-weight: 600;
+    color: #5A7187;
+    letter-spacing: 2px;
+    margin-top: 2px;
+}
+
+/* Form area */
 .form-area {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    gap: 14px;
+    padding: 40px 0;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 8px;
 }
 
 .form-title {
-    font-size: 26px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-bottom: 10px;
-    text-align: center;
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a1a2e;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+}
+
+.form-sub {
+    font-size: 14px;
+    color: #5A7187;
+    line-height: 1.5;
 }
 
 .msg {
     width: 100%;
-    max-width: 320px;
+    max-width: 340px;
     padding: 10px 16px;
     border-radius: 10px;
     font-size: 13px;
@@ -160,7 +246,7 @@ async function handleLogin() {
 
 .input-group {
     width: 100%;
-    max-width: 320px;
+    max-width: 340px;
 }
 
 .password-group {
@@ -169,7 +255,7 @@ async function handleLogin() {
 
 .input-field {
     width: 100%;
-    padding: 12px 16px;
+    padding: 13px 18px;
     border: none;
     border-radius: 999px;
     background: #dbeeff;
@@ -177,6 +263,7 @@ async function handleLogin() {
     color: #333;
     outline: none;
     transition: background 0.2s;
+    font-family: inherit;
 }
 
 .input-field:disabled {
@@ -194,7 +281,7 @@ async function handleLogin() {
 
 .toggle-password {
     position: absolute;
-    right: 14px;
+    right: 16px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -208,8 +295,8 @@ async function handleLogin() {
 
 .btn-entrar {
     width: 100%;
-    max-width: 320px;
-    padding: 12px;
+    max-width: 340px;
+    padding: 13px;
     background: #3fa9f5;
     color: #fff;
     font-size: 15px;
@@ -222,11 +309,13 @@ async function handleLogin() {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: background 0.2s, transform 0.1s;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    font-family: inherit;
 }
 
 .btn-entrar:hover:not(:disabled) {
     background: #2a96e8;
+    box-shadow: 0 6px 18px rgba(63, 169, 245, .35);
 }
 
 .btn-entrar:active:not(:disabled) {
@@ -236,6 +325,45 @@ async function handleLogin() {
 .btn-entrar:disabled {
     opacity: .7;
     cursor: not-allowed;
+}
+
+/* Stats */
+.stats {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 1px solid #E2E8F0;
+    width: 100%;
+    max-width: 340px;
+    justify-content: center;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.stat__num {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1E3D58;
+    letter-spacing: -0.3px;
+}
+
+.stat__label {
+    font-size: 11px;
+    color: #5A7187;
+    white-space: nowrap;
+}
+
+.stat__divider {
+    width: 1px;
+    height: 28px;
+    background: #E2E8F0;
 }
 
 .spinner {
@@ -254,6 +382,7 @@ async function handleLogin() {
     }
 }
 
+/* ── Painel direito ──────────────────────────────── */
 .right-panel {
     width: 42%;
     background: linear-gradient(160deg, #62c3f8 0%, #3a9de8 100%);
@@ -267,7 +396,7 @@ async function handleLogin() {
 .circle {
     position: absolute;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .circle-top {
@@ -287,13 +416,39 @@ async function handleLogin() {
 .right-content {
     text-align: center;
     z-index: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+.right-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
 }
 
 .right-title {
     font-size: 32px;
-    font-weight: 700;
+    font-weight: 800;
     color: #fff;
-    margin-bottom: 28px;
+    margin-bottom: 14px;
+    letter-spacing: -0.5px;
+}
+
+.right-sub {
+    font-size: 15px;
+    color: rgba(255, 255, 255, .85);
+    line-height: 1.65;
+    max-width: 240px;
+    margin-bottom: 32px;
 }
 
 .btn-cadastrar {
@@ -301,15 +456,17 @@ async function handleLogin() {
     background: #fff;
     color: #3a9de8;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     border: none;
     border-radius: 999px;
     cursor: pointer;
     transition: box-shadow 0.2s, transform 0.1s;
+    font-family: inherit;
 }
 
 .btn-cadastrar:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px);
 }
 
 .btn-cadastrar:active {
@@ -321,9 +478,13 @@ async function handleLogin() {
         flex-direction: column;
     }
 
+    .left-panel {
+        padding: 32px 24px;
+    }
+
     .right-panel {
         width: 100%;
-        min-height: 220px;
+        min-height: 260px;
     }
 }
 </style>

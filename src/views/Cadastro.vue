@@ -4,16 +4,60 @@
         <div class="left-panel">
             <div class="circle circle-top"></div>
             <div class="circle circle-bottom"></div>
+
+            <!-- Brand no topo do painel azul -->
+            <div class="left-brand" @click="$router.push('/')">
+                <div class="left-brand__logo">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"
+                            fill="white" />
+                        <circle cx="12" cy="13" r="2.5" fill="none" stroke="white" stroke-width="1.5" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="left-brand__name">SystemACE</p>
+                    <p class="left-brand__sub">EPI DASHBOARD</p>
+                </div>
+            </div>
+
             <div class="left-content">
                 <h2 class="left-title">Já possui uma conta?</h2>
                 <p class="left-subtitle">Se você já tem uma conta,<br>basta fazer o login.</p>
                 <button class="btn-entrar" @click="$router.push('/login')">Entre</button>
+
+                <!-- Bullets de valor -->
+                <ul class="left-features">
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        Conformidade com a NR-6
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        Rastreabilidade completa de EPIs
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        Gestão digital e segura
+                    </li>
+                </ul>
             </div>
         </div>
 
         <div class="right-panel">
             <div class="form-area">
-                <h1 class="form-title">Crie sua conta</h1>
+                <div class="form-header">
+                    <h1 class="form-title">Crie sua conta</h1>
+                    <p class="form-sub">Preencha os dados abaixo para começar.</p>
+                </div>
 
                 <p v-if="erro" class="msg msg--erro">{{ erro }}</p>
                 <p v-if="sucesso" class="msg msg--ok">{{ sucesso }}</p>
@@ -167,7 +211,6 @@ async function handleCadastro() {
         })
         if (authError) throw authError
 
-        // Atualiza data_nascimento e telefone (não passam pela trigger)
         if (dataNascimento.value || telefone.value) {
             const { data: alunoData } = await supabase
                 .from('aluno')
@@ -212,15 +255,16 @@ async function handleCadastro() {
 .cadastro-page {
     display: flex;
     min-height: 100vh;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Inter', 'DM Sans', 'Segoe UI', sans-serif;
 }
 
+/* ── Painel esquerdo (azul) ──────────────────────── */
 .left-panel {
     width: 36%;
     background: linear-gradient(160deg, #62c3f8 0%, #3a9de8 100%);
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    padding: 40px 44px;
     position: relative;
     overflow: hidden;
 }
@@ -228,7 +272,7 @@ async function handleCadastro() {
 .circle {
     position: absolute;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .circle-top {
@@ -245,23 +289,67 @@ async function handleCadastro() {
     right: -60px;
 }
 
+/* Brand no painel azul */
+.left-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    z-index: 1;
+    width: fit-content;
+}
+
+.left-brand__logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    backdrop-filter: blur(8px);
+}
+
+.left-brand__name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+}
+
+.left-brand__sub {
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, .6);
+    letter-spacing: 2px;
+    margin-top: 2px;
+}
+
 .left-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     z-index: 1;
-    padding: 24px;
+    gap: 0;
 }
 
 .left-title {
     font-size: 26px;
-    font-weight: 700;
+    font-weight: 800;
     color: #fff;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
+    letter-spacing: -0.4px;
 }
 
 .left-subtitle {
     font-size: 14px;
-    color: rgba(255, 255, 255, .9);
-    line-height: 1.6;
+    color: rgba(255, 255, 255, .88);
+    line-height: 1.65;
     margin-bottom: 28px;
 }
 
@@ -270,28 +358,98 @@ async function handleCadastro() {
     background: #fff;
     color: #3a9de8;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     border: none;
     border-radius: 999px;
     cursor: pointer;
     transition: box-shadow 0.2s, transform 0.1s;
+    font-family: inherit;
+    margin-bottom: 36px;
 }
 
 .btn-entrar:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px);
 }
 
 .btn-entrar:active {
     transform: scale(0.98);
 }
 
+/* Bullets de valor */
+.left-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 28px;
+    width: 100%;
+}
+
+.left-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, .92);
+    font-weight: 500;
+}
+
+.left-features svg {
+    flex-shrink: 0;
+}
+
+/* ── Painel direito (formulário) ─────────────────── */
 .right-panel {
     flex: 1;
     background: #fff;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 48px 52px;
+}
+
+/* Brand visível no topo do form */
+.right-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-bottom: 36px;
+    align-self: flex-start;
+    width: 100%;
+    max-width: 540px;
+}
+
+.right-brand__logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(140deg, #1E3D58 0%, #2A567C 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(30, 61, 88, .2);
+}
+
+.right-brand__name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1E3D58;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+}
+
+.right-brand__sub {
+    font-size: 9px;
+    font-weight: 600;
+    color: #5A7187;
+    letter-spacing: 2px;
+    margin-top: 2px;
 }
 
 .form-area {
@@ -303,12 +461,22 @@ async function handleCadastro() {
     gap: 12px;
 }
 
+.form-header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
 .form-title {
     font-size: 26px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-bottom: 4px;
-    text-align: center;
+    font-weight: 800;
+    color: #1a1a2e;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+}
+
+.form-sub {
+    font-size: 14px;
+    color: #5A7187;
 }
 
 .msg {
@@ -358,7 +526,7 @@ async function handleCadastro() {
 .input-field {
     flex: 1;
     width: 100%;
-    padding: 12px 16px;
+    padding: 13px 18px;
     border: none;
     border-radius: 999px;
     background: #dbeeff;
@@ -397,12 +565,12 @@ async function handleCadastro() {
 
 .password-wrapper .input-field {
     width: 100%;
-    padding-right: 42px;
+    padding-right: 44px;
 }
 
 .toggle-password {
     position: absolute;
-    right: 14px;
+    right: 16px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -430,11 +598,12 @@ async function handleCadastro() {
     justify-content: center;
     gap: 8px;
     transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    font-family: inherit;
 }
 
 .btn-cadastrar:hover:not(:disabled) {
     background: #2a96e8;
-    box-shadow: 0 4px 14px rgba(63, 169, 245, .4);
+    box-shadow: 0 6px 18px rgba(63, 169, 245, .35);
 }
 
 .btn-cadastrar:active:not(:disabled) {
@@ -469,7 +638,7 @@ async function handleCadastro() {
 
     .left-panel {
         width: 100%;
-        min-height: 200px;
+        min-height: 260px;
     }
 
     .right-panel {
@@ -478,6 +647,10 @@ async function handleCadastro() {
 
     .input-row {
         flex-direction: column;
+    }
+
+    .right-brand {
+        display: none;
     }
 }
 </style>

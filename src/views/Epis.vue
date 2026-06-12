@@ -1,39 +1,41 @@
 <template>
   <div class="app-layout">
-    <!-- Sidebar -->
-    <SidebarACE />
+    <SidebarACE ref="sidebarRef" />
 
-    <!-- Main Content -->
     <div class="main-wrapper">
-      <!-- Top Header -->
       <header class="top-header">
         <div class="header-left">
+          <button class="hamburger" @click="openMobileSidebar">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </button>
           <h1 class="page-title">Gestão de EPIs</h1>
         </div>
         <div class="header-right">
           <button class="btn-primary" @click="openCadastroModal">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <path d="M7.5 1V14M1 7.5H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 1V13M1 7H13" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
             Cadastrar
           </button>
           <button class="btn-secondary" @click="showFiltroModal = true">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <path d="M1 3H14M3 7.5H12M5.5 12H9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 3H13M3 7H11M5 11H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
             Filtrar
           </button>
           <button v-if="filtroTipo || filtroDisponibilidade" class="btn-danger-soft" @click="limparFiltros">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-              <path d="M1 1L12 12M12 1L1 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
             Limpar
           </button>
           <button class="btn-secondary" @click="exportarTablePDF">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <path d="M7.5 1V10M7.5 10L4.5 7M7.5 10L10.5 7" stroke="currentColor" stroke-width="1.5"
-                stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M1.5 11.5V13H13.5V11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 1V10M7 10L4 7M7 10L10 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M1 11V13H13V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
             Exportar
           </button>
@@ -45,46 +47,68 @@
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-header">
-              <span class="stat-label">TOTAL CADASTRADO</span>
-              <span class="stat-icon-wrap total">📦</span>
+              <span class="stat-label">Total Cadastrado</span>
+              <span class="stat-icon-wrap total">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 4l6-3 6 3v8l-6 3-6-3V4z" />
+                  <path d="M8 7v8M2 4l6 3 6-3" />
+                </svg>
+              </span>
             </div>
             <div class="stat-number">{{ stats.total }}</div>
             <div class="stat-sub">Todos os EPIs registrados</div>
           </div>
           <div class="stat-card">
             <div class="stat-header">
-              <span class="stat-label">EM ESTOQUE</span>
-              <span class="stat-icon-wrap avail">✓</span>
+              <span class="stat-label">Em Estoque</span>
+              <span class="stat-icon-wrap avail">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 8.5l3.5 3.5L13 5" />
+                </svg>
+              </span>
             </div>
             <div class="stat-number">{{ stats.emEstoque }}</div>
             <div class="stat-sub">Com quantidade disponível</div>
           </div>
           <div class="stat-card">
             <div class="stat-header">
-              <span class="stat-label">EM USO</span>
-              <span class="stat-icon-wrap inuse">⚙️</span>
+              <span class="stat-label">Em Uso</span>
+              <span class="stat-icon-wrap inuse">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="8" cy="8" r="6" />
+                  <path d="M8 5v3l2 2" />
+                </svg>
+              </span>
             </div>
             <div class="stat-number">{{ stats.emUso }}</div>
             <div class="stat-sub">Entregas ativas</div>
           </div>
           <div class="stat-card">
             <div class="stat-header">
-              <span class="stat-label">VENCIDOS / ALERTA</span>
-              <span class="stat-icon-wrap alert">⚠️</span>
+              <span class="stat-label">Vencidos / Alerta</span>
+              <span class="stat-icon-wrap alert">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 2L15 13.5H1L8 2z" />
+                  <path d="M8 6.5v3M8 11.8v.2" />
+                </svg>
+              </span>
             </div>
             <div class="stat-number">{{ stats.vencidos }}</div>
             <div class="stat-sub warn">Requer atenção</div>
           </div>
         </div>
 
-        <!-- Search + Table card -->
+        <!-- Table card -->
         <div class="card">
-          <!-- Search bar inside card -->
           <div class="table-toolbar">
             <div class="search-wrap">
-              <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="6.5" cy="6.5" r="5" stroke="#94a3b8" stroke-width="1.5" />
-                <path d="M10.5 10.5L14 14" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" />
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <circle cx="6.5" cy="6.5" r="5" stroke="#8FA3B5" stroke-width="1.5" />
+                <path d="M10.5 10.5L14 14" stroke="#8FA3B5" stroke-width="1.5" stroke-linecap="round" />
               </svg>
               <input v-model="searchQuery" type="text" placeholder="Filtre por nome, tipo ou patrimônio..."
                 class="search-input" />
@@ -92,24 +116,29 @@
             <span class="results-count">{{ filteredEPIs.length }} registro(s)</span>
           </div>
 
-          <!-- Table -->
           <div class="table-wrap">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>NOME</th>
-                  <th>CÓD. PATRIMÔNIO</th>
-                  <th>TIPO</th>
-                  <th>ESTOQUE</th>
-                  <th>STATUS</th>
-                  <th>AÇÕES</th>
+                  <th>Nome</th>
+                  <th>Cód. Patrimônio</th>
+                  <th>Tipo</th>
+                  <th>Estoque</th>
+                  <th>Status</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="epi in filteredEPIs" :key="epi.idepis">
                   <td>
                     <div class="epi-name-cell">
-                      <div class="epi-avatar">📦</div>
+                      <div class="epi-avatar">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                          stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M2 4l6-3 6 3v8l-6 3-6-3V4z" />
+                          <path d="M8 7v8M2 4l6 3 6-3" />
+                        </svg>
+                      </div>
                       <div>
                         <div class="epi-title">{{ epi.nome }}</div>
                         <div class="epi-subtitle">{{ epi.tipo || 'Sem tipo' }}</div>
@@ -120,9 +149,7 @@
                   <td>{{ epi.tipo || '---' }}</td>
                   <td class="mono">{{ epi.quantidade || 0 }} un</td>
                   <td>
-                    <span :class="['status-badge', getStatusClass(epi)]">
-                      {{ getStatusText(epi) }}
-                    </span>
+                    <span :class="['status-badge', getStatusClass(epi)]">{{ getStatusText(epi) }}</span>
                   </td>
                   <td class="actions-cell">
                     <button class="btn-dots" @click="openMenu($event, epi)" title="Ações">
@@ -167,14 +194,14 @@
       </main>
     </div>
 
-    <!-- Modal Cadastro -->
+    <!-- Modal Cadastro / Edição -->
     <div v-if="showCadastroModal" class="modal-overlay" @click="showCadastroModal = false">
       <div class="modal-box" @click.stop>
         <div class="modal-head">
           <h2>{{ novoEPI.idepis ? 'Editar EPI' : 'Cadastrar Novo EPI' }}</h2>
           <button class="btn-close-modal" @click="showCadastroModal = false">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M3 3L15 15M15 3L3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 3L13 13M13 3L3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
           </button>
         </div>
@@ -185,7 +212,7 @@
           </div>
           <div class="form-group">
             <label>Tipo *</label>
-            <input v-model="novoEPI.tipo" type="text" required placeholder="Ex: Proteção Cabeça" />
+            <input v-model="novoEPI.tipo" type="text" required placeholder="Ex: Proteção craniana" />
           </div>
           <div class="form-row">
             <div class="form-group">
@@ -194,7 +221,7 @@
             </div>
             <div class="form-group">
               <label>Código Patrimônio</label>
-              <input v-model="novoEPI.codigo_patrimonio" type="text" placeholder="Ex: PAT-001" />
+              <input v-model="novoEPI.codigo_patrimonio" type="text" placeholder="Ex: EPI-001" />
             </div>
           </div>
           <div class="form-row">
@@ -231,8 +258,8 @@
         <div class="modal-head">
           <h2>Filtrar EPIs</h2>
           <button class="btn-close-modal" @click="showFiltroModal = false">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M3 3L15 15M15 3L3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 3L13 13M13 3L3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
           </button>
         </div>
@@ -260,7 +287,6 @@
       </div>
     </div>
 
-    <!-- Overlay click-out para fechar menus -->
     <div v-if="activeMenu" class="menu-overlay" @click="activeMenu = null"></div>
   </div>
 </template>
@@ -273,6 +299,8 @@ import { jsPDF } from 'jspdf'
 
 const { getEPIs, addEPI, deleteEPI, supabase } = useSupabase()
 
+const sidebarRef = ref(null)
+const openMobileSidebar = () => { if (sidebarRef.value) sidebarRef.value.mobileOpen = true }
 const epis = ref([])
 const searchQuery = ref('')
 const showCadastroModal = ref(false)
@@ -280,7 +308,6 @@ const showFiltroModal = ref(false)
 const activeMenu = ref(null)
 const filtroTipo = ref('')
 const filtroDisponibilidade = ref('')
-
 const stats = ref({ total: 0, emEstoque: 0, emUso: 0, vencidos: 0 })
 
 const novoEPI = ref({
@@ -417,14 +444,14 @@ const exportarTablePDF = () => {
   const pageWidth = doc.internal.pageSize.getWidth()
   const pageHeight = doc.internal.pageSize.getHeight()
   let y = 20
-  doc.setFillColor(37, 99, 235)
+  doc.setFillColor(30, 61, 88)
   doc.rect(0, 0, pageWidth, 30, 'F')
   doc.setTextColor(255, 255, 255)
   doc.setFontSize(20)
   doc.setFont(undefined, 'bold')
   doc.text('Relatório de EPIs', 14, 20)
   y = 45
-  doc.setTextColor(30, 41, 59)
+  doc.setTextColor(30, 61, 88)
   doc.setFontSize(10)
   doc.setFont(undefined, 'normal')
   doc.text(`Total: ${stats.value.total} | Em Estoque: ${stats.value.emEstoque} | Em Uso: ${stats.value.emUso} | Vencidos: ${stats.value.vencidos}`, 14, y)
@@ -449,12 +476,22 @@ onMounted(carregarEPIs)
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
-
+/* ── Tokens ──────────────────────────────────────── */
 .app-layout {
+  --c-dark: #1E3D58;
+  --c-accent: #43B0F1;
+  --c-bg: #F5F5F0;
+  --c-surface: #FFFFFF;
+  --c-text: #1E3D58;
+  --c-muted: #5A7187;
+  --c-faint: #8FA3B5;
+  --c-border: #E2E5EA;
+
   display: flex;
   min-height: 100vh;
-  background-color: #f1f5f9;
+  background: var(--c-bg);
   font-family: 'IBM Plex Sans', sans-serif;
+  overflow-x: hidden;
 }
 
 .main-wrapper {
@@ -462,16 +499,17 @@ onMounted(carregarEPIs)
   display: flex;
   flex-direction: column;
   min-width: 0;
+  overflow-x: hidden;
 }
 
-/* Header */
+/* ── Header ──────────────────────────────────────── */
 .top-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 2rem;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e9f0;
+  padding: 1.4rem 2rem;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -479,10 +517,17 @@ onMounted(carregarEPIs)
   gap: 12px;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .page-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
   margin: 0;
 }
 
@@ -493,70 +538,90 @@ onMounted(carregarEPIs)
   align-items: center;
 }
 
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--c-text);
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.hamburger:hover {
+  background: #EDF0F2;
+}
+
 .btn-primary {
   display: flex;
   align-items: center;
   gap: 6px;
-  background-color: #2563EB;
-  color: white;
+  background: var(--c-accent);
+  color: #fff;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 9px 20px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 0.845rem;
   font-weight: 600;
-  transition: background 0.2s, transform 0.15s;
   font-family: inherit;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(67, 176, 241, .28);
 }
 
 .btn-primary:hover {
-  background-color: #1d4ed8;
+  background: #2E9BDF;
   transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(67, 176, 241, .38);
 }
 
 .btn-secondary {
   display: flex;
   align-items: center;
   gap: 6px;
-  background-color: #ffffff;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-  padding: 8px 14px;
-  border-radius: 6px;
+  background: var(--c-surface);
+  color: var(--c-muted);
+  border: 1px solid var(--c-border);
+  padding: 9px 16px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 0.845rem;
   font-weight: 500;
-  transition: all 0.2s;
   font-family: inherit;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 
 .btn-secondary:hover {
-  border-color: #2563EB;
-  color: #2563EB;
-  background-color: #eff6ff;
+  border-color: var(--c-accent);
+  color: var(--c-accent);
 }
 
 .btn-danger-soft {
   display: flex;
   align-items: center;
   gap: 6px;
-  background-color: #fef2f2;
-  color: #ef4444;
-  border: 1px solid #fecaca;
-  padding: 8px 14px;
-  border-radius: 6px;
+  background: rgba(239, 68, 68, .06);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, .2);
+  padding: 9px 16px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 0.845rem;
   font-weight: 500;
-  transition: all 0.2s;
   font-family: inherit;
+  transition: background 0.2s;
 }
 
 .btn-danger-soft:hover {
-  background-color: #fee2e2;
+  background: rgba(239, 68, 68, .12);
 }
 
-/* Main */
+/* ── Main ────────────────────────────────────────── */
 .epis-main {
   padding: 2rem;
   display: flex;
@@ -565,9 +630,10 @@ onMounted(carregarEPIs)
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
-/* Stats */
+/* ── Stats ───────────────────────────────────────── */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -575,85 +641,97 @@ onMounted(carregarEPIs)
 }
 
 .stat-card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 18px 20px;
-  border: 1px solid #e5e9f0;
+  background: var(--c-surface);
+  border-radius: 14px;
+  padding: 20px 22px;
+  border: 1px solid var(--c-border);
+  box-shadow: 0 2px 8px rgba(30, 61, 88, .04);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.stat-card:hover {
+  box-shadow: 0 8px 20px rgba(30, 61, 88, .08);
+  transform: translateY(-2px);
 }
 
 .stat-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .stat-label {
   font-size: 0.68rem;
-  font-weight: 600;
-  color: #94a3b8;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: var(--c-faint);
+  letter-spacing: 0.8px;
   text-transform: uppercase;
 }
 
 .stat-icon-wrap {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
 }
 
 .stat-icon-wrap.total {
-  background-color: #eff6ff;
+  background: rgba(67, 176, 241, .12);
+  color: var(--c-accent);
 }
 
 .stat-icon-wrap.avail {
-  background-color: #f0fdf4;
+  background: rgba(34, 197, 94, .1);
+  color: #16a34a;
 }
 
 .stat-icon-wrap.inuse {
-  background-color: #fffbeb;
+  background: rgba(245, 158, 11, .1);
+  color: #d97706;
 }
 
 .stat-icon-wrap.alert {
-  background-color: #fef2f2;
+  background: rgba(239, 68, 68, .08);
+  color: #dc2626;
 }
 
 .stat-number {
-  font-size: 2rem;
+  font-size: 2.1rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
   line-height: 1;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
+  letter-spacing: -0.5px;
 }
 
 .stat-sub {
-  font-size: 0.75rem;
-  color: #64748b;
+  font-size: 0.78rem;
+  color: var(--c-muted);
 }
 
 .stat-sub.warn {
-  color: #ef4444;
+  color: #dc2626;
+  font-weight: 500;
 }
 
-/* Card */
+/* ── Card tabela ─────────────────────────────────── */
 .card {
-  background: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #e5e9f0;
+  background: var(--c-surface);
+  border-radius: 14px;
+  border: 1px solid var(--c-border);
+  box-shadow: 0 2px 8px rgba(30, 61, 88, .04);
   overflow: hidden;
 }
 
-/* Toolbar */
 .table-toolbar {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 16px 20px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--c-border);
   flex-wrap: wrap;
 }
 
@@ -662,21 +740,18 @@ onMounted(carregarEPIs)
   align-items: center;
   gap: 8px;
   flex: 1;
-  min-width: 240px;
-  background-color: #f8fafc;
-  border: 1px solid #e5e9f0;
-  border-radius: 7px;
-  padding: 8px 12px;
-  transition: border-color 0.2s;
+  min-width: 220px;
+  background: #FAFAF7;
+  border: 1px solid var(--c-border);
+  border-radius: 9px;
+  padding: 9px 13px;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .search-wrap:focus-within {
-  border-color: #2563EB;
-  background-color: #fff;
-}
-
-.search-icon {
-  flex-shrink: 0;
+  border-color: var(--c-accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(67, 176, 241, .1);
 }
 
 .search-input {
@@ -684,22 +759,22 @@ onMounted(carregarEPIs)
   background: transparent;
   outline: none;
   font-size: 0.875rem;
-  color: #1e293b;
+  color: var(--c-text);
   width: 100%;
   font-family: inherit;
 }
 
 .search-input::placeholder {
-  color: #94a3b8;
+  color: var(--c-faint);
 }
 
 .results-count {
   font-size: 0.78rem;
-  color: #94a3b8;
+  color: var(--c-faint);
   white-space: nowrap;
 }
 
-/* Table */
+/* ── Tabela ──────────────────────────────────────── */
 .table-wrap {
   overflow-x: auto;
 }
@@ -711,25 +786,25 @@ onMounted(carregarEPIs)
 }
 
 .data-table thead tr {
-  background-color: #f8fafc;
+  background: #FAFAF7;
 }
 
 .data-table th {
   padding: 10px 16px;
   text-align: left;
   font-size: 0.7rem;
-  font-weight: 600;
-  color: #94a3b8;
+  font-weight: 700;
+  color: var(--c-faint);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid #e5e9f0;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid var(--c-border);
   white-space: nowrap;
 }
 
 .data-table td {
   padding: 13px 16px;
-  color: #475569;
-  border-bottom: 1px solid #f1f5f9;
+  color: var(--c-muted);
+  border-bottom: 1px solid #EDF0F2;
   vertical-align: middle;
 }
 
@@ -738,7 +813,7 @@ onMounted(carregarEPIs)
 }
 
 .data-table tbody tr:hover td {
-  background-color: #f8fafc;
+  background: #FAFAF7;
 }
 
 .epi-name-cell {
@@ -750,24 +825,24 @@ onMounted(carregarEPIs)
 .epi-avatar {
   width: 36px;
   height: 36px;
-  background-color: #eff6ff;
-  border-radius: 8px;
+  background: rgba(67, 176, 241, .1);
+  color: var(--c-accent);
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
   flex-shrink: 0;
 }
 
 .epi-title {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--c-text);
   font-size: 0.875rem;
 }
 
 .epi-subtitle {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--c-faint);
   margin-top: 2px;
 }
 
@@ -779,33 +854,33 @@ onMounted(carregarEPIs)
 /* Status badges */
 .status-badge {
   display: inline-block;
-  padding: 3px 10px;
-  border-radius: 5px;
+  padding: 3px 12px;
+  border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 700;
 }
 
 .status-badge.disponivel {
-  background: #dcfce7;
+  background: rgba(34, 197, 94, .12);
   color: #16a34a;
 }
 
 .status-badge.sem-estoque {
-  background: #fef9c3;
-  color: #ca8a04;
+  background: rgba(234, 179, 8, .1);
+  color: #a16207;
 }
 
 .status-badge.vencido {
-  background: #fef2f2;
-  color: #ef4444;
+  background: rgba(239, 68, 68, .1);
+  color: #dc2626;
 }
 
 .status-badge.indisponivel {
-  background: #f1f5f9;
-  color: #64748b;
+  background: rgba(100, 116, 139, .1);
+  color: #5A7187;
 }
 
-/* Actions */
+/* Ações */
 .actions-cell {
   position: relative;
   text-align: center;
@@ -815,30 +890,30 @@ onMounted(carregarEPIs)
   background: none;
   border: none;
   cursor: pointer;
-  color: #94a3b8;
-  padding: 4px 8px;
-  border-radius: 5px;
-  transition: all 0.15s;
+  color: var(--c-faint);
+  padding: 6px 8px;
+  border-radius: 7px;
+  transition: background 0.15s, color 0.15s;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .btn-dots:hover {
-  background-color: #f1f5f9;
-  color: #1e293b;
+  background: #EDF0F2;
+  color: var(--c-text);
 }
 
 .action-menu {
   position: absolute;
   right: 4px;
   top: calc(100% + 4px);
-  background: #ffffff;
-  border: 1px solid #e5e9f0;
-  border-radius: 8px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
   z-index: 200;
-  min-width: 140px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  min-width: 148px;
+  box-shadow: 0 8px 24px rgba(30, 61, 88, .12);
   overflow: hidden;
 }
 
@@ -847,25 +922,24 @@ onMounted(carregarEPIs)
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 9px 14px;
+  padding: 10px 14px;
   background: none;
   border: none;
-  color: #475569;
+  color: var(--c-muted);
   cursor: pointer;
-  text-align: left;
   font-size: 0.845rem;
   font-family: inherit;
-  transition: background 0.15s;
+  transition: background 0.15s, color 0.15s;
 }
 
 .menu-item:hover {
-  background-color: #f8fafc;
-  color: #1e293b;
+  background: #FAFAF7;
+  color: var(--c-text);
 }
 
 .menu-item.danger:hover {
-  background-color: #fef2f2;
-  color: #ef4444;
+  background: rgba(239, 68, 68, .06);
+  color: #dc2626;
 }
 
 .menu-overlay {
@@ -876,32 +950,32 @@ onMounted(carregarEPIs)
 
 .no-data {
   text-align: center;
-  color: #94a3b8;
+  color: var(--c-faint);
   padding: 48px !important;
   font-size: 0.875rem;
 }
 
-/* Modals */
+/* ── Modais ──────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.45);
+  background: rgba(15, 23, 42, .45);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 500;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(3px);
 }
 
 .modal-box {
-  background: #ffffff;
-  border-radius: 12px;
+  background: var(--c-surface);
+  border-radius: 16px;
   padding: 28px;
   max-width: 560px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 24px 64px rgba(30, 61, 88, .18);
 }
 
 .modal-sm {
@@ -918,24 +992,25 @@ onMounted(carregarEPIs)
 .modal-head h2 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
   margin: 0;
+  letter-spacing: -0.2px;
 }
 
 .btn-close-modal {
   background: none;
   border: none;
   cursor: pointer;
-  color: #94a3b8;
-  padding: 4px;
-  border-radius: 5px;
-  transition: all 0.15s;
+  color: var(--c-faint);
+  padding: 6px;
+  border-radius: 7px;
+  transition: color 0.15s, background 0.15s;
   display: flex;
 }
 
 .btn-close-modal:hover {
-  color: #ef4444;
-  background: #fef2f2;
+  color: #dc2626;
+  background: rgba(239, 68, 68, .06);
 }
 
 .modal-form {
@@ -953,27 +1028,27 @@ onMounted(carregarEPIs)
 .form-group label {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #475569;
+  color: var(--c-muted);
 }
 
 .form-group input,
 .form-group select {
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 7px;
-  padding: 9px 12px;
-  color: #1e293b;
+  background: #FAFAF7;
+  border: 1px solid var(--c-border);
+  border-radius: 9px;
+  padding: 10px 13px;
+  color: var(--c-text);
   font-size: 0.875rem;
   font-family: inherit;
-  transition: all 0.2s;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #2563EB;
-  background-color: #fff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  border-color: var(--c-accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(67, 176, 241, .1);
 }
 
 .form-row {
@@ -990,28 +1065,30 @@ onMounted(carregarEPIs)
 }
 
 .btn-save {
-  background-color: #2563EB;
-  color: white;
+  background: var(--c-accent);
+  color: #fff;
   border: none;
-  padding: 9px 22px;
-  border-radius: 7px;
+  padding: 10px 24px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 600;
   font-family: inherit;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(67, 176, 241, .28);
 }
 
 .btn-save:hover {
-  background-color: #1d4ed8;
+  background: #2E9BDF;
+  box-shadow: 0 6px 18px rgba(67, 176, 241, .38);
 }
 
 .btn-cancel-modal {
-  background-color: #f1f5f9;
-  color: #475569;
+  background: #EDF0F2;
+  color: var(--c-muted);
   border: none;
-  padding: 9px 18px;
-  border-radius: 7px;
+  padding: 10px 20px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 500;
@@ -1020,21 +1097,21 @@ onMounted(carregarEPIs)
 }
 
 .btn-cancel-modal:hover {
-  background-color: #e2e8f0;
+  background: #DDE2E8;
 }
 
 .file-input {
   font-size: 0.82rem;
-  color: #475569;
+  color: var(--c-muted);
   cursor: pointer;
 }
 
 .foto-preview {
   width: 120px;
   height: 120px;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--c-border);
   margin-top: 4px;
 }
 
@@ -1044,34 +1121,59 @@ onMounted(carregarEPIs)
   object-fit: cover;
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
+/* ── Responsivo ──────────────────────────────────── */
+@media (max-width: 1100px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .epis-main {
     padding: 16px;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr 1fr;
+    gap: 14px;
   }
 
   .top-header {
-    padding: 14px 16px;
+    padding: 12px 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .app-layout {
+    display: block;
+  }
+
+  .main-wrapper {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
 
   .form-row {
     grid-template-columns: 1fr;
   }
-}
 
-@media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
+  .header-right {
+    gap: 6px;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger-soft {
+    padding: 8px 12px;
+    font-size: 0.8rem;
   }
 }
 </style>

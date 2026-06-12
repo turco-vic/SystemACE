@@ -1,10 +1,8 @@
 <template>
-  <!-- Overlay escuro no mobile quando aberto -->
   <div v-if="mobileOpen" class="sidebar-overlay" @click="mobileOpen = false"></div>
 
   <aside class="sidebar" :class="{ collapsed: isCollapsed, 'mobile-open': mobileOpen }">
 
-    <!-- Logo -->
     <div class="sidebar-logo">
       <div class="logo-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -16,7 +14,6 @@
         <span class="logo-name">SystemACE</span>
         <span class="logo-sub">EPI DASHBOARD</span>
       </div>
-      <!-- Fechar no mobile -->
       <button class="mobile-close" @click="mobileOpen = false">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
@@ -24,7 +21,6 @@
       </button>
     </div>
 
-    <!-- Collapse button (só desktop) -->
     <button class="collapse-btn" @click="toggleCollapse" :title="isCollapsed ? 'Expandir' : 'Recolher'">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="collapse-arrow">
         <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -32,7 +28,6 @@
       </svg>
     </button>
 
-    <!-- Nav -->
     <nav class="sidebar-nav">
       <div class="nav-section-label">Menu</div>
 
@@ -127,7 +122,6 @@ const mobileOpen = ref(false)
 
 const toggleCollapse = () => { isCollapsed.value = !isCollapsed.value }
 
-// Expõe mobileOpen para o Dashboard poder abrir via ref
 defineExpose({ mobileOpen })
 </script>
 
@@ -143,14 +137,16 @@ defineExpose({ mobileOpen })
   --sb-border: rgba(255, 255, 255, 0.1);
 
   width: 232px;
-  min-height: 100vh;
   background: var(--sb-bg);
   display: flex;
   flex-direction: column;
   font-family: 'IBM Plex Sans', sans-serif;
+
   position: sticky;
   top: 0;
   height: 100vh;
+  align-self: flex-start;
+
   z-index: 60;
   flex-shrink: 0;
   overflow: visible;
@@ -394,13 +390,11 @@ defineExpose({ mobileOpen })
 /* ── Mobile ──────────────────────────────────────── */
 @media (max-width: 768px) {
   .sidebar {
-    /* Sai da tela por padrão */
     position: fixed;
     left: -232px;
     top: 0;
     height: 100vh;
     width: 232px !important;
-    /* ignora collapsed no mobile */
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 60;
   }
@@ -413,7 +407,6 @@ defineExpose({ mobileOpen })
     display: block;
   }
 
-  /* Mostra X, esconde botão collapse desktop */
   .mobile-close {
     display: flex;
     align-items: center;
@@ -423,7 +416,6 @@ defineExpose({ mobileOpen })
     display: none;
   }
 
-  /* Labels sempre visíveis no mobile */
   .collapsed .nav-label,
   .collapsed .logo-text,
   .collapsed .nav-section-label {

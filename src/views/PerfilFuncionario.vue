@@ -1,32 +1,44 @@
 <template>
   <div class="app-layout">
-    <SidebarACE />
+    <SidebarACE ref="sidebarRef" />
 
     <div class="main-wrapper">
       <header class="top-header">
         <div class="header-left">
-          <h1 class="page-title">Meu Perfil</h1>
-          <p class="stat-sub">Gerencie suas informações pessoais.</p>
+          <button class="hamburger" @click="openMobileSidebar">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </button>
+          <div>
+            <h1 class="page-title">Meu Perfil</h1>
+            <p class="page-sub">Gerencie suas informações pessoais.</p>
+          </div>
         </div>
-        <div class="header-right">
-          <button class="btn-logout" @click="deslogar">Sair</button>
-        </div>
+        <button class="btn-logout" @click="deslogar">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+            <path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Sair
+        </button>
       </header>
 
-      <main class="content-container">
-
+      <main class="content-main">
         <div v-if="loading" class="loading-state">Carregando...</div>
 
         <div v-else class="profile-layout">
-
-          <!-- Card avatar + info básica -->
+          <!-- Avatar card -->
           <div class="card avatar-card">
-            <div class="avatar-wrapper">
+            <div class="avatar-wrap">
               <img v-if="funcionario.foto" :src="funcionario.foto" class="avatar-img" alt="Foto" />
               <div v-else class="avatar-placeholder">{{ iniciais }}</div>
-              <label class="avatar-edit-btn" title="Trocar foto">
-                📷
-                <input type="file" accept="image/*" class="hidden-input" @change="handleFotoChange" />
+              <label class="avatar-edit" title="Trocar foto">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M11 2l3 3-9 9H2v-3L11 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                <input type="file" accept="image/*" class="hidden" @change="handleFotoChange" />
               </label>
             </div>
             <h2 class="profile-name">{{ funcionario.nome }} {{ funcionario.sobrenome }}</h2>
@@ -37,54 +49,34 @@
             <p class="profile-email">{{ funcionario.email }}</p>
           </div>
 
-          <!-- Card formulário -->
+          <!-- Form card -->
           <div class="card form-card">
-            <div v-if="successMsg" class="success-banner">{{ successMsg }}</div>
-            <div v-if="errorMsg" class="error-banner">{{ errorMsg }}</div>
+            <div v-if="successMsg" class="banner success">{{ successMsg }}</div>
+            <div v-if="errorMsg" class="banner error">{{ errorMsg }}</div>
 
             <h3 class="section-title">Dados Pessoais</h3>
             <div class="form-grid">
-              <div class="field">
-                <label>Nome</label>
-                <input v-model="form.nome" type="text" :disabled="!editando" />
+              <div class="form-group"><label>Nome</label><input v-model="form.nome" type="text" :disabled="!editando" />
               </div>
-              <div class="field">
-                <label>Sobrenome</label>
-                <input v-model="form.sobrenome" type="text" :disabled="!editando" />
+              <div class="form-group"><label>Sobrenome</label><input v-model="form.sobrenome" type="text"
+                  :disabled="!editando" /></div>
+              <div class="form-group"><label>CPF</label><input v-model="form.cpf" type="text" :disabled="!editando" />
               </div>
-              <div class="field">
-                <label>CPF</label>
-                <input v-model="form.cpf" type="text" :disabled="!editando" />
-              </div>
-              <div class="field">
-                <label>Telefone</label>
-                <input v-model="form.telefone" type="text" :disabled="!editando" />
-              </div>
-              <div class="field">
-                <label>Data de Nascimento</label>
-                <input v-model="form.data_nascimento" type="date" :disabled="!editando" />
-              </div>
-              <div class="field">
-                <label>Função</label>
-                <input v-model="form.funcao" type="text" :disabled="!editando" />
-              </div>
-              <div class="field">
-                <label>Email</label>
-                <input v-model="form.email" type="email" disabled />
-              </div>
-              <div class="field">
-                <label>Status</label>
-                <input :value="funcionario.status" disabled />
-              </div>
+              <div class="form-group"><label>Telefone</label><input v-model="form.telefone" type="text"
+                  :disabled="!editando" /></div>
+              <div class="form-group"><label>Data de Nascimento</label><input v-model="form.data_nascimento" type="date"
+                  :disabled="!editando" /></div>
+              <div class="form-group"><label>Função</label><input v-model="form.funcao" type="text"
+                  :disabled="!editando" /></div>
+              <div class="form-group"><label>Email</label><input v-model="form.email" type="email" disabled /></div>
+              <div class="form-group"><label>Status</label><input :value="funcionario.status" disabled /></div>
             </div>
-
             <div class="form-actions">
               <button v-if="!editando" class="btn-primary" @click="editando = true">Editar</button>
               <template v-else>
-                <button class="btn-secondary" @click="cancelarEdicao">Cancelar</button>
-                <button class="btn-primary" @click="salvar" :disabled="saving">
-                  {{ saving ? 'Salvando...' : 'Salvar' }}
-                </button>
+                <button class="btn-cancel" @click="cancelarEdicao">Cancelar</button>
+                <button class="btn-primary" @click="salvar" :disabled="saving">{{ saving ? 'Salvando...' : 'Salvar'
+                  }}</button>
               </template>
             </div>
 
@@ -92,22 +84,15 @@
 
             <h3 class="section-title">Alterar Senha</h3>
             <div class="form-grid">
-              <div class="field">
-                <label>Nova Senha</label>
-                <input v-model="novaSenha" type="password" placeholder="Mínimo 6 caracteres" />
-              </div>
-              <div class="field">
-                <label>Confirmar Senha</label>
-                <input v-model="confirmarSenha" type="password" placeholder="Repita a senha" />
-              </div>
+              <div class="form-group"><label>Nova Senha</label><input v-model="novaSenha" type="password"
+                  placeholder="Mínimo 6 caracteres" /></div>
+              <div class="form-group"><label>Confirmar Senha</label><input v-model="confirmarSenha" type="password"
+                  placeholder="Repita a senha" /></div>
             </div>
             <div class="form-actions">
-              <button class="btn-primary" @click="alterarSenha" :disabled="savingPwd">
-                {{ savingPwd ? 'Alterando...' : 'Alterar Senha' }}
-              </button>
+              <button class="btn-primary" @click="alterarSenha" :disabled="savingPwd">{{ savingPwd ? 'Alterando...' : 'Alterar Senha' }}</button>
             </div>
           </div>
-
         </div>
       </main>
     </div>
@@ -121,8 +106,10 @@ import SidebarACE from '../components/SidebarACE.vue'
 import { useSupabase } from '../composables/useSupabase'
 
 const { supabase, session } = useSupabase()
-
 const router = useRouter()
+
+const sidebarRef = ref(null)
+const openMobileSidebar = () => { if (sidebarRef.value) sidebarRef.value.mobileOpen = true }
 
 const funcionario = ref({})
 const form = ref({})
@@ -135,123 +122,58 @@ const errorMsg = ref('')
 const novaSenha = ref('')
 const confirmarSenha = ref('')
 
-const iniciais = computed(() => {
-  const n = funcionario.value.nome?.charAt(0) || ''
-  const s = funcionario.value.sobrenome?.charAt(0) || ''
-  return (n + s).toUpperCase() || '?'
-})
+const iniciais = computed(() => ((funcionario.value.nome?.charAt(0) || '') + (funcionario.value.sobrenome?.charAt(0) || '')).toUpperCase() || '?')
 
 const carregarPerfil = async () => {
   try {
     const email = session.value?.user?.email
     if (!email) throw new Error('Sessão inválida.')
-    const { data, error } = await supabase
-      .from('funcionario')
-      .select('*')
-      .eq('email', email)
-      .maybeSingle()
+    const { data, error } = await supabase.from('funcionario').select('*').eq('email', email).maybeSingle()
     if (error) throw error
-    if (!data) throw new Error('Perfil não encontrado. Verifique se seu cadastro foi concluído.')
-    funcionario.value = data
-    form.value = { ...data }
-  } catch (e) {
-    errorMsg.value = 'Erro ao carregar perfil: ' + e.message
-    console.error(e)
-  } finally {
-    loading.value = false
-  }
+    if (!data) throw new Error('Perfil não encontrado.')
+    funcionario.value = data; form.value = { ...data }
+  } catch (e) { errorMsg.value = 'Erro ao carregar perfil: ' + e.message }
+  finally { loading.value = false }
 }
 
-const cancelarEdicao = () => {
-  form.value = { ...funcionario.value }
-  editando.value = false
-  errorMsg.value = ''
-}
+const cancelarEdicao = () => { form.value = { ...funcionario.value }; editando.value = false; errorMsg.value = '' }
 
 const salvar = async () => {
-  saving.value = true
-  errorMsg.value = ''
-  successMsg.value = ''
+  saving.value = true; errorMsg.value = ''; successMsg.value = ''
   try {
-    const email = session.value?.user?.email
-    if (!email) throw new Error('Sessão inválida.')
-    const { error } = await supabase
-      .from('funcionario')
-      .update({
-        nome: form.value.nome,
-        sobrenome: form.value.sobrenome,
-        cpf: form.value.cpf,
-        telefone: form.value.telefone,
-        data_nascimento: form.value.data_nascimento || null,
-        funcao: form.value.funcao,
-      })
-      .eq('email', email)
+    const { error } = await supabase.from('funcionario').update({ nome: form.value.nome, sobrenome: form.value.sobrenome, cpf: form.value.cpf, telefone: form.value.telefone, data_nascimento: form.value.data_nascimento || null, funcao: form.value.funcao }).eq('email', session.value?.user?.email)
     if (error) throw error
-    funcionario.value = { ...funcionario.value, ...form.value }
-    editando.value = false
-    successMsg.value = 'Perfil atualizado com sucesso!'
-    setTimeout(() => successMsg.value = '', 3000)
-  } catch (e) {
-    errorMsg.value = 'Erro ao salvar: ' + e.message
-  } finally {
-    saving.value = false
-  }
+    funcionario.value = { ...funcionario.value, ...form.value }; editando.value = false
+    successMsg.value = 'Perfil atualizado com sucesso!'; setTimeout(() => successMsg.value = '', 3000)
+  } catch (e) { errorMsg.value = 'Erro ao salvar: ' + e.message } finally { saving.value = false }
 }
 
 const alterarSenha = async () => {
-  if (!novaSenha.value || novaSenha.value.length < 6) {
-    errorMsg.value = 'A senha deve ter no mínimo 6 caracteres.'
-    return
-  }
-  if (novaSenha.value !== confirmarSenha.value) {
-    errorMsg.value = 'As senhas não coincidem.'
-    return
-  }
-  savingPwd.value = true
-  errorMsg.value = ''
-  successMsg.value = ''
+  if (!novaSenha.value || novaSenha.value.length < 6) { errorMsg.value = 'Mínimo 6 caracteres.'; return }
+  if (novaSenha.value !== confirmarSenha.value) { errorMsg.value = 'Senhas não coincidem.'; return }
+  savingPwd.value = true; errorMsg.value = ''; successMsg.value = ''
   try {
     const { error } = await supabase.auth.updateUser({ password: novaSenha.value })
     if (error) throw error
-    novaSenha.value = ''
-    confirmarSenha.value = ''
-    successMsg.value = 'Senha alterada com sucesso!'
-    setTimeout(() => successMsg.value = '', 3000)
-  } catch (e) {
-    errorMsg.value = 'Erro ao alterar senha: ' + e.message
-  } finally {
-    savingPwd.value = false
-  }
+    novaSenha.value = ''; confirmarSenha.value = ''
+    successMsg.value = 'Senha alterada com sucesso!'; setTimeout(() => successMsg.value = '', 3000)
+  } catch (e) { errorMsg.value = 'Erro: ' + e.message } finally { savingPwd.value = false }
 }
 
 const handleFotoChange = async (e) => {
-  const file = e.target.files?.[0]
-  if (!file) return
+  const file = e.target.files?.[0]; if (!file) return
   try {
     const nome = `func-${funcionario.value.idfuncionario}-${Date.now()}`
     const { error: uploadError } = await supabase.storage.from('avatars').upload(nome, file, { upsert: true })
     if (uploadError) throw uploadError
     const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(nome)
-    const fotoUrl = urlData.publicUrl
-    const { error } = await supabase.from('funcionario').update({ foto: fotoUrl }).eq('idfuncionario', funcionario.value.idfuncionario)
-    if (error) throw error
-    funcionario.value.foto = fotoUrl
-    successMsg.value = 'Foto atualizada!'
-    setTimeout(() => successMsg.value = '', 3000)
-  } catch (e) {
-    errorMsg.value = 'Erro ao enviar foto: ' + e.message
-  }
+    await supabase.from('funcionario').update({ foto: urlData.publicUrl }).eq('idfuncionario', funcionario.value.idfuncionario)
+    funcionario.value.foto = urlData.publicUrl
+    successMsg.value = 'Foto atualizada!'; setTimeout(() => successMsg.value = '', 3000)
+  } catch (e) { errorMsg.value = 'Erro ao enviar foto: ' + e.message }
 }
 
-const deslogar = async () => {
-  try {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-    router.push('/login')
-  } catch (e) {
-    errorMsg.value = 'Erro ao deslogar: ' + e.message
-  }
-}
+const deslogar = async () => { await supabase.auth.signOut(); router.push('/login') }
 
 onMounted(carregarPerfil)
 </script>
@@ -260,282 +182,381 @@ onMounted(carregarPerfil)
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
 .app-layout {
-  display: flex;
+  --c-dark: #1E3D58;
+  --c-accent: #43B0F1;
+  --c-bg: #F5F5F0;
+  --c-surface: #FFFFFF;
+  --c-text: #1E3D58;
+  --c-muted: #5A7187;
+  --c-faint: #8FA3B5;
+  --c-border: #E2E5EA;
   min-height: 100vh;
-  background-color: #f1f5f9;
+  background: var(--c-bg);
   font-family: 'IBM Plex Sans', sans-serif;
+  overflow-x: hidden;
 }
 
 .main-wrapper {
-  flex: 1;
+  margin-left: 232px;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .top-header {
-  background: white;
-  padding: 1.5rem 2rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e2e8f0;
+  justify-content: space-between;
+  padding: 1.4rem 2rem;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  gap: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .page-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
   margin: 0;
+  line-height: 1.2;
 }
 
-.stat-sub {
-  color: #64748b;
-  font-size: 0.875rem;
-  margin-top: 4px;
+.page-sub {
+  font-size: 0.8rem;
+  color: var(--c-faint);
+  margin: 3px 0 0 0;
 }
 
-.header-right {
-  display: flex;
+.hamburger {
+  display: none;
   align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--c-text);
+  flex-shrink: 0;
 }
 
 .btn-logout {
-  padding: 8px 14px;
-  background: transparent;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: 1px solid var(--c-border);
+  padding: 9px 18px;
+  border-radius: 999px;
+  color: var(--c-muted);
   cursor: pointer;
+  font-size: 0.845rem;
+  font-weight: 500;
+  font-family: inherit;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 
 .btn-logout:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  border-color: #ef4444;
+  color: #dc2626;
+  background: rgba(239, 68, 68, .05);
 }
 
-.content-container {
+.content-main {
   padding: 2rem;
   max-width: 1000px;
-  margin: 0 auto;
   width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .loading-state {
   text-align: center;
-  color: #64748b;
+  color: var(--c-faint);
   padding: 4rem;
 }
 
 .profile-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 260px 1fr;
+  gap: 20px;
   align-items: start;
 }
 
 .card {
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  padding: 1.5rem;
+  background: var(--c-surface);
+  border-radius: 14px;
+  border: 1px solid var(--c-border);
+  box-shadow: 0 2px 8px rgba(30, 61, 88, .04);
+  padding: 24px;
 }
 
 .avatar-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   text-align: center;
 }
 
-.avatar-wrapper {
+.avatar-wrap {
   position: relative;
-  margin-bottom: 0.5rem;
+  margin-bottom: 4px;
 }
 
 .avatar-img,
 .avatar-placeholder {
-  width: 96px;
-  height: 96px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   object-fit: cover;
 }
 
 .avatar-placeholder {
-  background: #2563eb;
-  color: white;
-  font-size: 2rem;
+  background: var(--c-accent);
+  color: #fff;
+  font-size: 1.75rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.avatar-edit-btn {
+.avatar-edit {
   position: absolute;
   bottom: 0;
   right: 0;
-  background: white;
-  border: 2px solid #e2e8f0;
+  width: 28px;
+  height: 28px;
+  background: var(--c-surface);
+  border: 2px solid var(--c-border);
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 0.8rem;
+  color: var(--c-muted);
+  transition: border-color 0.2s, color 0.2s;
 }
 
-.hidden-input { display: none; }
+.avatar-edit:hover {
+  border-color: var(--c-accent);
+  color: var(--c-accent);
+}
+
+.hidden {
+  display: none;
+}
 
 .profile-name {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
   margin: 0;
 }
 
 .profile-role {
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: #eff6ff;
-  color: #2563eb;
-  padding: 2px 10px;
-  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(67, 176, 241, .12);
+  color: var(--c-accent);
+  padding: 3px 12px;
+  border-radius: 999px;
 }
 
 .profile-status {
   font-size: 0.72rem;
-  font-weight: 600;
-  padding: 2px 10px;
-  border-radius: 99px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 999px;
 }
 
-.profile-status.ativo { background: #f0fdf4; color: #166534; }
-.profile-status.inativo { background: #fef2f2; color: #991b1b; }
+.profile-status.ativo {
+  background: rgba(34, 197, 94, .12);
+  color: #16a34a;
+}
+
+.profile-status.inativo {
+  background: rgba(239, 68, 68, .1);
+  color: #dc2626;
+}
 
 .profile-email {
-  font-size: 0.8rem;
-  color: #64748b;
+  font-size: 0.78rem;
+  color: var(--c-faint);
   word-break: break-all;
 }
 
 .form-card {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .section-title {
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
   margin: 0;
+  letter-spacing: -0.2px;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 14px;
 }
 
-.field {
+.form-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
-.field label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #94a3b8;
+.form-group label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--c-faint);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.8px;
 }
 
-.field input {
-  padding: 9px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  color: #1e293b;
+.form-group input {
+  padding: 10px 13px;
+  border: 1px solid var(--c-border);
+  border-radius: 9px;
+  font-size: 0.875rem;
+  color: var(--c-text);
   font-family: inherit;
-  background: white;
+  background: #FAFAF7;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.field input:focus { border-color: #2563eb; }
-.field input:disabled { background: #f8fafc; color: #94a3b8; cursor: not-allowed; }
+.form-group input:focus {
+  border-color: var(--c-accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(67, 176, 241, .1);
+}
+
+.form-group input:disabled {
+  background: #F0F2F4;
+  color: var(--c-faint);
+  cursor: not-allowed;
+}
 
 .form-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 10px;
   justify-content: flex-end;
 }
 
 .btn-primary {
-  padding: 9px 20px;
-  background: #2563eb;
-  color: white;
+  padding: 10px 24px;
+  background: var(--c-accent);
+  color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 999px;
   font-size: 0.875rem;
   font-weight: 600;
-  cursor: pointer;
   font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(67, 176, 241, .28);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2E9BDF;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  background: #EDF0F2;
+  color: var(--c-muted);
+  border: none;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
   transition: background 0.2s;
 }
 
-.btn-primary:hover:not(:disabled) { background: #1d4ed8; }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.btn-secondary {
-  padding: 9px 20px;
-  background: white;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.2s;
+.btn-cancel:hover {
+  background: #DDE2E8;
 }
-
-.btn-secondary:hover { border-color: #2563eb; color: #2563eb; }
 
 .divider {
   border: none;
-  border-top: 1px solid #f1f5f9;
-  margin: 0.5rem 0;
+  border-top: 1px solid #EDF0F2;
+  margin: 4px 0;
 }
 
-.success-banner {
-  background: #f0fdf4;
+.banner {
+  padding: 11px 14px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.banner.success {
+  background: rgba(34, 197, 94, .1);
   color: #166534;
-  border: 1px solid #bbf7d0;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 0.85rem;
+  border: 1px solid rgba(34, 197, 94, .2);
 }
 
-.error-banner {
-  background: #fef2f2;
+.banner.error {
+  background: rgba(239, 68, 68, .08);
   color: #991b1b;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 0.85rem;
+  border: 1px solid rgba(239, 68, 68, .2);
 }
 
-@media (max-width: 768px) {
-  .profile-layout { grid-template-columns: 1fr; }
-  .form-grid { grid-template-columns: 1fr; }
+@media (max-width: 900px) {
+  .main-wrapper {
+    margin-left: 0;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .content-main {
+    padding: 16px;
+  }
+
+  .top-header {
+    padding: 12px 16px;
+  }
+
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-sub {
+    display: none;
+  }
 }
 </style>

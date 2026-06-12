@@ -1,33 +1,39 @@
 <template>
   <div class="app-layout" @click="activeMenu = null">
-    <SidebarACE />
+    <SidebarACE ref="sidebarRef" />
 
     <div class="main-wrapper">
       <header class="top-header">
         <div class="header-left">
-          <h1 class="page-title">Gestão de Funcionários</h1>
-          <p class="stat-sub">Total: <strong>{{ stats.total }}</strong> funcionários</p>
-        </div>
-        <div class="header-right">
-          <button class="btn-primary" @click="openCadastroModal">
-            <span class="icon">➕</span>
-            Cadastrar Funcionário
+          <button class="hamburger" @click.stop="openMobileSidebar">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
           </button>
+          <div>
+            <h1 class="page-title">Gestão de Funcionários</h1>
+            <p class="page-sub">Total: <strong>{{ stats.total }}</strong> funcionários</p>
+          </div>
         </div>
+        <button class="btn-primary" @click.stop="openCadastroModal">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M7 1V13M1 7H13" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          Cadastrar Funcionário
+        </button>
       </header>
 
-      <main class="content-container">
+      <main class="content-main">
         <div class="card search-card">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Buscar por nome, email ou CPF..."
-              class="search-input"
-            />
+          <div class="search-wrap">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <circle cx="6.5" cy="6.5" r="5" stroke="#8FA3B5" stroke-width="1.5" />
+              <path d="M10.5 10.5L14 14" stroke="#8FA3B5" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            <input v-model="searchQuery" type="text" placeholder="Buscar por nome, email ou CPF..."
+              class="search-input" />
           </div>
-          <select v-model="statusFilter" class="status-select">
+          <select v-model="statusFilter" class="filter-select">
             <option value="">Todos</option>
             <option value="Ativo">Ativo</option>
             <option value="Inativo">Inativo</option>
@@ -35,7 +41,7 @@
         </div>
 
         <div class="card table-card">
-          <div class="table-responsive">
+          <div class="table-wrap">
             <table class="data-table">
               <thead>
                 <tr>
@@ -44,47 +50,71 @@
                   <th>CPF</th>
                   <th>Função</th>
                   <th>Status</th>
-                  <th class="text-right">Ações</th>
+                  <th class="th-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="func in filteredFuncionarios" :key="func.idfuncionario">
                   <td>
-                    <div class="user-profile">
+                    <div class="user-cell">
                       <div class="avatar">
                         <img v-if="func.foto" :src="func.foto" alt="Avatar" />
                         <span v-else>{{ func.nome?.charAt(0).toUpperCase() || '?' }}</span>
                       </div>
-                      <div class="user-info">
+                      <div>
                         <span class="user-name">{{ func.nome }} {{ func.sobrenome }}</span>
                         <span class="user-id">#{{ func.idfuncionario }}</span>
                       </div>
                     </div>
                   </td>
                   <td>{{ func.email || '—' }}</td>
-                  <td>{{ func.cpf || '—' }}</td>
+                  <td class="mono">{{ func.cpf || '—' }}</td>
                   <td>{{ func.funcao || '—' }}</td>
                   <td>
-                    <span class="status-badge" :class="func.status === 'Ativo' ? 'ativo' : 'inativo'">
+                    <span class="status-pill" :class="func.status === 'Ativo' ? 'ativo' : 'inativo'">
                       {{ func.status || 'Ativo' }}
                     </span>
                   </td>
-                  <td class="text-right">
-                    <div class="actions-wrapper">
-                      <button class="btn-dots" @click.stop="openMenu($event, func)">⋮</button>
-                      <div v-if="activeMenu === func.idfuncionario" :class="['dropdown-menu', { 'drop-up': menuUpId === func.idfuncionario }]">
-                        <button @click="editarFuncionario(func)" class="dropdown-item">✏️ Editar</button>
-                        <button @click="toggleStatus(func)" class="dropdown-item">
-                          {{ func.status === 'Ativo' ? '🔴 Desativar' : '🟢 Ativar' }}
+                  <td class="td-right">
+                    <div class="actions-wrap">
+                      <button class="btn-dots" @click.stop="openMenu($event, func)">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <circle cx="8" cy="3" r="1.2" fill="currentColor" />
+                          <circle cx="8" cy="8" r="1.2" fill="currentColor" />
+                          <circle cx="8" cy="13" r="1.2" fill="currentColor" />
+                        </svg>
+                      </button>
+                      <div v-if="activeMenu === func.idfuncionario" class="action-menu"
+                        :class="{ 'drop-up': menuUpId === func.idfuncionario }">
+                        <button @click.stop="editarFuncionario(func)" class="menu-item">
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path d="M1 13L4.5 12 12.5 4 10 1.5 2 9.5 1 13Z" stroke="currentColor" stroke-width="1.2"
+                              stroke-linejoin="round" />
+                          </svg>
+                          Editar
                         </button>
-                        <div class="dropdown-divider"></div>
-                        <button @click="deletarFuncionario(func.idfuncionario)" class="dropdown-item delete">🗑️ Excluir</button>
+                        <button @click.stop="toggleStatus(func)" class="menu-item">
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2" />
+                            <path d="M7 4v3.5l2.5 1.5" stroke="currentColor" stroke-width="1.2"
+                              stroke-linecap="round" />
+                          </svg>
+                          {{ func.status === 'Ativo' ? 'Desativar' : 'Ativar' }}
+                        </button>
+                        <div class="menu-divider"></div>
+                        <button @click.stop="deletarFuncionario(func.idfuncionario)" class="menu-item danger">
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path d="M2 3.5H12M5 3.5V2.5H9V3.5M5.5 6V11M8.5 6V11M3 3.5L3.5 12H10.5L11 3.5H3Z"
+                              stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                          Excluir
+                        </button>
                       </div>
                     </div>
                   </td>
                 </tr>
                 <tr v-if="filteredFuncionarios.length === 0">
-                  <td colspan="6" class="empty-state">Nenhum funcionário encontrado.</td>
+                  <td colspan="6" class="no-data">Nenhum funcionário encontrado.</td>
                 </tr>
               </tbody>
             </table>
@@ -93,66 +123,63 @@
       </main>
     </div>
 
-    <!-- Modal Cadastro / Edição -->
+    <!-- Modal -->
     <div v-if="showCadastroModal" class="modal-overlay" @click="closeCadastroModal">
-      <div class="modal-card" @click.stop>
-        <div class="modal-header">
-          <h3>{{ isEditando ? 'Editar Funcionário' : 'Novo Funcionário' }}</h3>
-          <button class="close-x" @click="closeCadastroModal">&times;</button>
+      <div class="modal-box" @click.stop>
+        <div class="modal-head">
+          <h2>{{ isEditando ? 'Editar Funcionário' : 'Novo Funcionário' }}</h2>
+          <button class="btn-close-modal" @click="closeCadastroModal">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 3L13 13M13 3L3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
         </div>
 
         <div v-if="!isEditando" class="modal-alert">
-          <p>⚠️ Cadastro manual não gera senha. O funcionário deve se registrar para acessar o sistema.</p>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+            <path d="M8 2L15 13.5H1L8 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M8 6.5v3M8 11.8v.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          Cadastro manual não gera senha. O funcionário deve se registrar para acessar o sistema.
         </div>
 
         <form @submit.prevent="salvarFuncionario" class="modal-form">
-          <div class="form-grid">
-            <div class="field">
-              <label>Nome *</label>
-              <input v-model="form.nome" type="text" required placeholder="Ex: Carlos" />
-            </div>
-            <div class="field">
-              <label>Sobrenome</label>
-              <input v-model="form.sobrenome" type="text" placeholder="Ex: Souza" />
-            </div>
-            <div class="field">
-              <label>CPF</label>
-              <input v-model="form.cpf" type="text" placeholder="000.000.000-00" />
-            </div>
-            <div class="field">
-              <label>Email</label>
-              <input v-model="form.email" type="email" placeholder="email@exemplo.com" />
-            </div>
-            <div class="field">
-              <label>Telefone</label>
-              <input v-model="form.telefone" type="text" placeholder="(00) 00000-0000" />
-            </div>
-            <div class="field">
-              <label>Função</label>
-              <input v-model="form.funcao" type="text" placeholder="Ex: Almoxarife" />
-            </div>
-            <div class="field">
-              <label>Data de Nascimento</label>
-              <input v-model="form.data_nascimento" type="date" />
-            </div>
-            <div class="field" v-if="isEditando">
-              <label>Status</label>
+          <div class="form-row">
+            <div class="form-group"><label>Nome *</label><input v-model="form.nome" type="text" required
+                placeholder="Ex: Carlos" /></div>
+            <div class="form-group"><label>Sobrenome</label><input v-model="form.sobrenome" type="text"
+                placeholder="Ex: Souza" /></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>CPF</label><input v-model="form.cpf" type="text"
+                placeholder="000.000.000-00" /></div>
+            <div class="form-group"><label>Email</label><input v-model="form.email" type="email"
+                placeholder="email@exemplo.com" /></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Telefone</label><input v-model="form.telefone" type="text"
+                placeholder="(00) 00000-0000" /></div>
+            <div class="form-group"><label>Função</label><input v-model="form.funcao" type="text"
+                placeholder="Ex: Almoxarife" /></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Data de Nascimento</label><input v-model="form.data_nascimento"
+                type="date" /></div>
+            <div class="form-group" v-if="isEditando"><label>Status</label>
               <select v-model="form.status">
                 <option value="Ativo">Ativo</option>
                 <option value="Inativo">Inativo</option>
               </select>
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn-ghost" @click="closeCadastroModal">Cancelar</button>
-            <button type="submit" class="btn-primary" :disabled="saving">
-              {{ saving ? 'Salvando...' : 'Salvar' }}
-            </button>
+          <div class="modal-foot">
+            <button type="button" class="btn-cancel-modal" @click="closeCadastroModal">Cancelar</button>
+            <button type="submit" class="btn-save" :disabled="saving">{{ saving ? 'Salvando...' : 'Salvar' }}</button>
           </div>
         </form>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -161,7 +188,10 @@ import SidebarACE from '../components/SidebarACE.vue'
 import { ref, computed, onMounted } from 'vue'
 import { useSupabase } from '../composables/useSupabase'
 
-const { getFuncionarios, addFuncionario, updateFuncionario, deleteFuncionario, supabase } = useSupabase()
+const { getFuncionarios, addFuncionario, updateFuncionario, deleteFuncionario } = useSupabase()
+
+const sidebarRef = ref(null)
+const openMobileSidebar = () => { if (sidebarRef.value) sidebarRef.value.mobileOpen = true }
 
 const funcionarios = ref([])
 const searchQuery = ref('')
@@ -174,34 +204,19 @@ const editandoId = ref(null)
 const saving = ref(false)
 const stats = ref({ total: 0 })
 
-const form = ref({
-  nome: '', sobrenome: '', cpf: '', email: '',
-  telefone: '', funcao: '', data_nascimento: '', status: 'Ativo'
-})
+const form = ref({ nome: '', sobrenome: '', cpf: '', email: '', telefone: '', funcao: '', data_nascimento: '', status: 'Ativo' })
 
 const filteredFuncionarios = computed(() => {
   let res = funcionarios.value
   const q = searchQuery.value.toLowerCase().trim()
-  if (q) {
-    res = res.filter(f =>
-      (f.nome + ' ' + f.sobrenome).toLowerCase().includes(q) ||
-      (f.email || '').toLowerCase().includes(q) ||
-      (f.cpf || '').includes(q)
-    )
-  }
-  if (statusFilter.value) {
-    res = res.filter(f => f.status === statusFilter.value)
-  }
+  if (q) res = res.filter(f => (f.nome + ' ' + f.sobrenome).toLowerCase().includes(q) || (f.email || '').toLowerCase().includes(q) || (f.cpf || '').includes(q))
+  if (statusFilter.value) res = res.filter(f => f.status === statusFilter.value)
   return res
 })
 
 const carregarFuncionarios = async () => {
-  try {
-    funcionarios.value = await getFuncionarios() || []
-    stats.value.total = funcionarios.value.length
-  } catch (e) {
-    console.error(e)
-  }
+  try { funcionarios.value = await getFuncionarios() || []; stats.value.total = funcionarios.value.length }
+  catch (e) { console.error(e) }
 }
 
 const openCadastroModal = () => {
@@ -210,79 +225,38 @@ const openCadastroModal = () => {
   showCadastroModal.value = true
 }
 
-const closeCadastroModal = () => {
-  showCadastroModal.value = false
-}
+const closeCadastroModal = () => { showCadastroModal.value = false }
 
 const salvarFuncionario = async () => {
   saving.value = true
   try {
-    const payload = {
-      nome: form.value.nome,
-      sobrenome: form.value.sobrenome,
-      cpf: form.value.cpf || null,
-      email: form.value.email || null,
-      telefone: form.value.telefone || null,
-      funcao: form.value.funcao || null,
-      data_nascimento: form.value.data_nascimento || null,
-      status: form.value.status || 'Ativo',
-    }
-    if (isEditando.value) {
-      await updateFuncionario(editandoId.value, payload)
-    } else {
-      await addFuncionario(payload)
-    }
-    await carregarFuncionarios()
-    closeCadastroModal()
-  } catch (e) {
-    alert('Erro ao salvar: ' + e.message)
-  } finally {
-    saving.value = false
-  }
+    const payload = { nome: form.value.nome, sobrenome: form.value.sobrenome, cpf: form.value.cpf || null, email: form.value.email || null, telefone: form.value.telefone || null, funcao: form.value.funcao || null, data_nascimento: form.value.data_nascimento || null, status: form.value.status || 'Ativo' }
+    if (isEditando.value) await updateFuncionario(editandoId.value, payload)
+    else await addFuncionario(payload)
+    await carregarFuncionarios(); closeCadastroModal()
+  } catch (e) { alert('Erro ao salvar: ' + e.message) } finally { saving.value = false }
 }
 
 const openMenu = (event, func) => {
   const id = func.idfuncionario
-  if (activeMenu.value === id) {
-    activeMenu.value = null
-    menuUpId.value = null
-    return
-  }
-  // calcula espaço disponível abaixo do botão para decidir abrir pra cima
+  if (activeMenu.value === id) { activeMenu.value = null; menuUpId.value = null; return }
   const rect = event.currentTarget.getBoundingClientRect()
-  const spaceBelow = window.innerHeight - rect.bottom
-  const openUp = spaceBelow < 180
-  menuUpId.value = openUp ? id : null
+  menuUpId.value = (window.innerHeight - rect.bottom) < 180 ? id : null
   activeMenu.value = id
 }
 
-const editarFuncionario = (func) => {
-  isEditando.value = true
-  editandoId.value = func.idfuncionario
-  form.value = { ...func, data_nascimento: func.data_nascimento || '' }
-  showCadastroModal.value = true
-  activeMenu.value = null
-}
+const editarFuncionario = (func) => { isEditando.value = true; editandoId.value = func.idfuncionario; form.value = { ...func, data_nascimento: func.data_nascimento || '' }; showCadastroModal.value = true; activeMenu.value = null }
 
 const toggleStatus = async (func) => {
-  const novoStatus = func.status === 'Ativo' ? 'Inativo' : 'Ativo'
-  try {
-    await updateFuncionario(func.idfuncionario, { status: novoStatus })
-    await carregarFuncionarios()
-  } catch (e) {
-    alert('Erro ao alterar status: ' + e.message)
-  }
+  try { await updateFuncionario(func.idfuncionario, { status: func.status === 'Ativo' ? 'Inativo' : 'Ativo' }); await carregarFuncionarios() }
+  catch (e) { alert('Erro: ' + e.message) }
   activeMenu.value = null
 }
 
 const deletarFuncionario = async (id) => {
   if (confirm('Excluir este funcionário permanentemente?')) {
-    try {
-      await deleteFuncionario(id)
-      await carregarFuncionarios()
-    } catch (e) {
-      alert('Erro ao excluir: ' + e.message)
-    }
+    try { await deleteFuncionario(id); await carregarFuncionarios() }
+    catch (e) { alert('Erro: ' + e.message) }
   }
   activeMenu.value = null
 }
@@ -294,123 +268,182 @@ onMounted(carregarFuncionarios)
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
 .app-layout {
-  display: flex;
+  --c-dark: #1E3D58;
+  --c-accent: #43B0F1;
+  --c-bg: #F5F5F0;
+  --c-surface: #FFFFFF;
+  --c-text: #1E3D58;
+  --c-muted: #5A7187;
+  --c-faint: #8FA3B5;
+  --c-border: #E2E5EA;
   min-height: 100vh;
-  background: #f1f5f9;
+  background: var(--c-bg);
   font-family: 'IBM Plex Sans', sans-serif;
+  overflow-x: hidden;
 }
 
 .main-wrapper {
-  flex: 1;
+  margin-left: 232px;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .top-header {
-  background: white;
-  padding: 1.5rem 2rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e2e8f0;
+  justify-content: space-between;
+  padding: 1.4rem 2rem;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .page-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
   margin: 0;
+  line-height: 1.2;
 }
 
-.stat-sub {
-  color: #64748b;
-  font-size: 0.875rem;
-  margin-top: 4px;
+.page-sub {
+  font-size: 0.8rem;
+  color: var(--c-faint);
+  margin: 3px 0 0 0;
+}
+
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--c-text);
+  flex-shrink: 0;
 }
 
 .btn-primary {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #2563eb;
-  color: white;
+  background: var(--c-accent);
+  color: #fff;
   border: none;
-  padding: 9px 18px;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  padding: 9px 20px;
+  border-radius: 999px;
   cursor: pointer;
+  font-size: 0.845rem;
+  font-weight: 600;
   font-family: inherit;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(67, 176, 241, .28);
 }
 
-.btn-primary:hover:not(:disabled) { background: #1d4ed8; }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary:hover {
+  background: #2E9BDF;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(67, 176, 241, .38);
+}
 
-.content-container {
+.content-main {
   padding: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 16px;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .card {
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  padding: 1.25rem 1.5rem;
+  background: var(--c-surface);
+  border-radius: 14px;
+  border: 1px solid var(--c-border);
+  box-shadow: 0 2px 8px rgba(30, 61, 88, .04);
 }
 
 .search-card {
   display: flex;
-  gap: 1rem;
+  gap: 12px;
   align-items: center;
+  padding: 14px 18px;
+  flex-wrap: wrap;
 }
 
-.search-box {
+.search-wrap {
   display: flex;
   align-items: center;
   gap: 8px;
   flex: 1;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 0 12px;
+  min-width: 200px;
+  background: #FAFAF7;
+  border: 1px solid var(--c-border);
+  border-radius: 9px;
+  padding: 10px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.search-icon { color: #94a3b8; font-size: 0.9rem; }
+.search-wrap:focus-within {
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px rgba(67, 176, 241, .1);
+  background: #fff;
+}
 
 .search-input {
-  flex: 1;
   border: none;
   background: transparent;
-  padding: 9px 0;
-  font-size: 0.875rem;
-  color: #1e293b;
   outline: none;
+  font-size: 0.875rem;
+  color: var(--c-text);
+  width: 100%;
   font-family: inherit;
 }
 
-.status-select {
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 9px 12px;
+.search-input::placeholder {
+  color: var(--c-faint);
+}
+
+.filter-select {
+  padding: 10px 14px;
+  border: 1px solid var(--c-border);
+  border-radius: 9px;
+  background: var(--c-surface);
+  color: var(--c-muted);
   font-size: 0.875rem;
-  color: #475569;
-  background: #f8fafc;
-  outline: none;
   font-family: inherit;
+  outline: none;
   cursor: pointer;
 }
 
-.table-card { padding: 0; overflow: visible; }
+.filter-select:focus {
+  border-color: var(--c-accent);
+}
 
-.table-responsive { overflow-x: auto; }
+.table-card {
+  overflow: hidden;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
 
 .data-table {
   width: 100%;
@@ -418,248 +451,372 @@ onMounted(carregarFuncionarios)
   font-size: 0.875rem;
 }
 
+.data-table thead tr {
+  background: #FAFAF7;
+}
+
 .data-table th {
-  background: #f8fafc;
-  color: #64748b;
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  padding: 12px 16px;
+  padding: 10px 16px;
   text-align: left;
-  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--c-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid var(--c-border);
+  white-space: nowrap;
+}
+
+.th-right {
+  text-align: right;
 }
 
 .data-table td {
-  padding: 14px 16px;
-  color: #334155;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 13px 16px;
+  color: var(--c-muted);
+  border-bottom: 1px solid #EDF0F2;
   vertical-align: middle;
 }
 
-.data-table tbody tr:last-child td { border-bottom: none; }
-.data-table tbody tr:hover td { background: #f8fafc; }
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
 
-.text-right { text-align: right; }
+.data-table tbody tr:hover td {
+  background: #FAFAF7;
+}
 
-.user-profile {
+.td-right {
+  text-align: right;
+}
+
+.mono {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+}
+
+.user-cell {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
 }
 
 .avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #2563eb;
-  color: white;
-  font-weight: 700;
-  font-size: 0.9rem;
+  background: rgba(67, 176, 241, .12);
+  color: var(--c-accent);
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
   overflow: hidden;
   flex-shrink: 0;
 }
 
-.avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-.user-name { display: block; font-weight: 600; color: #1e293b; }
-.user-id { display: block; font-size: 0.75rem; color: #94a3b8; }
-
-.status-badge {
-  padding: 3px 10px;
-  border-radius: 99px;
-  font-size: 0.75rem;
-  font-weight: 600;
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.status-badge.ativo { background: #f0fdf4; color: #166534; }
-.status-badge.inativo { background: #fef2f2; color: #991b1b; }
+.user-name {
+  display: block;
+  font-weight: 600;
+  color: var(--c-text);
+  font-size: 0.875rem;
+}
 
-.actions-wrapper { position: relative; display: inline-block; }
+.user-id {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--c-faint);
+  margin-top: 2px;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.status-pill.ativo {
+  background: rgba(34, 197, 94, .12);
+  color: #16a34a;
+}
+
+.status-pill.inativo {
+  background: rgba(239, 68, 68, .1);
+  color: #dc2626;
+}
+
+.actions-wrap {
+  position: relative;
+  display: inline-block;
+}
 
 .btn-dots {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.2rem;
-  color: #94a3b8;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: background 0.2s;
+  color: var(--c-faint);
+  padding: 6px 8px;
+  border-radius: 7px;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
 }
 
-.btn-dots:hover { background: #f1f5f9; color: #475569; }
+.btn-dots:hover {
+  background: #EDF0F2;
+  color: var(--c-text);
+}
 
-.dropdown-menu {
+.action-menu {
   position: absolute;
   right: 0;
-  top: 110%;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  z-index: 100;
-  min-width: 160px;
+  top: calc(100% + 4px);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  z-index: 200;
+  min-width: 148px;
+  box-shadow: 0 8px 24px rgba(30, 61, 88, .12);
   overflow: hidden;
 }
 
-.dropdown-menu.drop-up {
+.action-menu.drop-up {
   top: auto;
-  bottom: 110%;
+  bottom: calc(100% + 4px);
 }
 
-.dropdown-item {
-  display: block;
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   padding: 10px 14px;
   background: none;
   border: none;
-  text-align: left;
-  font-size: 0.875rem;
-  color: #334155;
+  color: var(--c-muted);
   cursor: pointer;
+  font-size: 0.845rem;
   font-family: inherit;
-  transition: background 0.15s;
+  transition: background 0.15s, color 0.15s;
 }
 
-.dropdown-item:hover { background: #f8fafc; }
-.dropdown-item.delete { color: #ef4444; }
-.dropdown-item.delete:hover { background: #fef2f2; }
-.dropdown-divider { border-top: 1px solid #f1f5f9; }
+.menu-item:hover {
+  background: #FAFAF7;
+  color: var(--c-text);
+}
 
-.empty-state {
+.menu-item.danger:hover {
+  background: rgba(239, 68, 68, .06);
+  color: #dc2626;
+}
+
+.menu-divider {
+  height: 1px;
+  background: var(--c-border);
+}
+
+.no-data {
   text-align: center;
-  color: #94a3b8;
-  padding: 3rem;
-  font-size: 0.9rem;
+  color: var(--c-faint);
+  padding: 40px;
+  font-size: 0.875rem;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, .45);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
-  padding: 1rem;
+  z-index: 500;
+  backdrop-filter: blur(3px);
 }
 
-.modal-card {
-  background: white;
-  border-radius: 14px;
-  width: 100%;
-  max-width: 560px;
+.modal-box {
+  background: var(--c-surface);
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 540px;
+  width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  box-shadow: 0 24px 64px rgba(30, 61, 88, .18);
 }
 
-.modal-header {
+.modal-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 22px;
 }
 
-.modal-header h3 {
-  font-size: 1rem;
+.modal-head h2 {
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
   margin: 0;
 }
 
-.close-x {
+.btn-close-modal {
   background: none;
   border: none;
-  font-size: 1.4rem;
-  color: #94a3b8;
   cursor: pointer;
-  line-height: 1;
+  color: var(--c-faint);
+  padding: 6px;
+  border-radius: 7px;
+  display: flex;
+  transition: color 0.15s, background 0.15s;
 }
 
-.close-x:hover { color: #475569; }
+.btn-close-modal:hover {
+  color: #dc2626;
+  background: rgba(239, 68, 68, .06);
+}
 
 .modal-alert {
-  margin: 1rem 1.5rem 0;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
-  border-radius: 8px;
-  padding: 10px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  background: rgba(234, 88, 12, .07);
+  border: 1px solid rgba(234, 88, 12, .2);
+  color: #9a3412;
+  padding: 11px 14px;
+  border-radius: 9px;
   font-size: 0.82rem;
-  color: #92400e;
+  line-height: 1.5;
+  margin-bottom: 20px;
 }
 
-.modal-form { padding: 1.25rem 1.5rem; }
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-}
-
-.field {
+.modal-form {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 14px;
 }
 
-.field label {
-  font-size: 0.72rem;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.82rem;
   font-weight: 600;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  color: var(--c-muted);
 }
 
-.field input,
-.field select {
-  padding: 9px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  color: #1e293b;
+.form-group input,
+.form-group select {
+  background: #FAFAF7;
+  border: 1px solid var(--c-border);
+  border-radius: 9px;
+  padding: 10px 13px;
+  color: var(--c-text);
+  font-size: 0.875rem;
   font-family: inherit;
-  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;
-  transition: border-color 0.2s;
 }
 
-.field input:focus,
-.field select:focus { border-color: #2563eb; }
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--c-accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(67, 176, 241, .1);
+}
 
-.modal-footer {
+.modal-foot {
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid #f1f5f9;
-  margin-top: 0.5rem;
+  gap: 10px;
+  margin-top: 8px;
 }
 
-.btn-ghost {
-  padding: 9px 18px;
-  background: white;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+.btn-save {
+  background: var(--c-accent);
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 999px;
+  cursor: pointer;
   font-size: 0.875rem;
   font-weight: 600;
-  cursor: pointer;
   font-family: inherit;
-  transition: all 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(67, 176, 241, .28);
 }
 
-.btn-ghost:hover { border-color: #2563eb; color: #2563eb; }
+.btn-save:hover {
+  background: #2E9BDF;
+}
 
-@media (max-width: 640px) {
-  .form-grid { grid-template-columns: 1fr; }
-  .search-card { flex-direction: column; }
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-cancel-modal {
+  background: #EDF0F2;
+  color: var(--c-muted);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.btn-cancel-modal:hover {
+  background: #DDE2E8;
+}
+
+@media (max-width: 900px) {
+  .main-wrapper {
+    margin-left: 0;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .content-main {
+    padding: 16px;
+  }
+
+  .top-header {
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .page-sub {
+    display: none;
+  }
+
+  .search-card {
+    flex-direction: column;
+  }
 }
 </style>

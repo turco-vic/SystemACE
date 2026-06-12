@@ -1,28 +1,33 @@
 <template>
-  <div class="gerenciar-solicitacoes app-layout">
-    <SidebarACE />
-    
+  <div class="app-layout" @click="() => { }">
+    <SidebarACE ref="sidebarRef" />
+
     <div class="main-wrapper">
       <header class="top-header">
         <div class="header-left">
-          <h1 class="page-title">Gerenciar Solicitações de EPIs</h1>
-          <p class="page-subtitle">Analise e aprove ou rejeite as solicitações de empréstimo dos alunos.</p>
+          <button class="hamburger" @click.stop="openMobileSidebar">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </button>
+          <div>
+            <h1 class="page-title">Gerenciar Solicitações de EPIs</h1>
+            <p class="page-sub">Analise e aprove ou rejeite as solicitações de empréstimo dos alunos.</p>
+          </div>
         </div>
       </header>
-      <main class="dashboard-main solicitacoes-admin-main">
 
-        <div class="card filters-section">
-          <div class="search-box">
-            <i class="fas fa-search search-icon"></i>
-            <input 
-              v-model="searchQuery" 
-              type="text" 
-              placeholder="Buscar por aluno ou EPI..." 
-              class="form-input"
-            >
+      <main class="content-main">
+        <!-- Filtros -->
+        <div class="card filters-bar">
+          <div class="search-wrap">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <circle cx="6.5" cy="6.5" r="5" stroke="#8FA3B5" stroke-width="1.5" />
+              <path d="M10.5 10.5L14 14" stroke="#8FA3B5" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            <input v-model="searchQuery" type="text" placeholder="Buscar por aluno ou EPI..." class="search-input" />
           </div>
-          
-          <select v-model="statusFilter" class="form-input select-input">
+          <select v-model="statusFilter" class="filter-select">
             <option value="">Todos os status</option>
             <option value="pendente">Pendente</option>
             <option value="aprovado">Aprovado</option>
@@ -30,129 +35,132 @@
             <option value="entregue">Entregue</option>
             <option value="devolvido">Devolvido</option>
           </select>
-
-          <button 
-            v-if="filteredSolicitacoes.some(s => s.status === 'pendente')"
-            @click="aceitarTodos"
-            class="btn btn-success-solid"
-            title="Aprovar todas as solicitações pendentes"
-          >
-            <i class="fas fa-check-double"></i> Aceitar Todas
+          <button v-if="filteredSolicitacoes.some(s => s.status === 'pendente')" @click="aceitarTodos"
+            class="btn-accept-all">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 7l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            Aceitar Todas
           </button>
         </div>
 
-        <div v-if="loading" class="state-container">
-          <i class="fas fa-spinner fa-spin state-icon"></i>
+        <!-- Loading -->
+        <div v-if="loading" class="state-box">
+          <div class="spinner"></div>
           <p>Carregando solicitações...</p>
         </div>
 
-        <div v-else-if="filteredSolicitacoes.length === 0" class="state-container empty-state">
-          <i class="fas fa-inbox state-icon"></i>
-          <p>Nenhuma solicitação encontrada com os filtros atuais.</p>
+        <!-- Empty -->
+        <div v-else-if="filteredSolicitacoes.length === 0" class="state-box">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <rect x="4" y="8" width="32" height="26" rx="4" stroke="#8FA3B5" stroke-width="2" />
+            <path d="M13 20h14M13 26h8" stroke="#8FA3B5" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <p>Nenhuma solicitação encontrada.</p>
         </div>
 
-        <div v-else class="solicitacoes-grid">
-          <div v-for="solicitacao in filteredSolicitacoes" :key="solicitacao.idsolicitacoes" class="card solicitacao-card">
-            <div class="solicitacao-header">
-              
-              <div class="aluno-perfil-wrapper">
-                <img 
-                  :src="getFotoUrl(solicitacao.aluno)" 
-                  alt="Foto do Aluno" 
-                  class="aluno-foto"
-                >
-                <div class="aluno-info">
-                  <h3>{{ solicitacao.aluno?.nome }} {{ solicitacao.aluno?.sobrenome }}</h3>
-                  <p class="aluno-email"><i class="fas fa-envelope"></i> {{ solicitacao.aluno?.email }}</p>
+        <!-- Grid -->
+        <div v-else class="sol-grid">
+          <div v-for="sol in filteredSolicitacoes" :key="sol.idsolicitacoes" class="sol-card">
+            <!-- Header do card -->
+            <div class="sol-head">
+              <div class="aluno-info">
+                <div class="aluno-avatar">{{ getIniciais(sol.aluno) }}</div>
+                <div>
+                  <p class="aluno-name">{{ sol.aluno?.nome }} {{ sol.aluno?.sobrenome }}</p>
+                  <p class="aluno-email">{{ sol.aluno?.email }}</p>
                 </div>
               </div>
-
-              <span :class="['status-badge', `status-${solicitacao.status}`]">
-                {{ getStatusText(solicitacao.status) }}
-              </span>
+              <span class="status-pill" :class="sol.status">{{ getStatusText(sol.status) }}</span>
             </div>
 
-            <div class="solicitacao-body">
-              <div class="epi-info">
-                <h4>{{ solicitacao.epis?.nome }}</h4>
-                <div class="epi-details">
-                  <span class="epi-tag"><i class="fas fa-tag"></i> {{ solicitacao.epis?.tipo || 'N/A' }}</span>
-                  <span class="epi-date"><i class="fas fa-calendar-alt"></i> {{ formatDate(solicitacao.data_solicitacao) }}</span>
-                </div>
-              </div>
-
-              <div class="solicitacao-actions" v-if="solicitacao.status === 'pendente'">
-                <button 
-                  @click="aprovarSolicitacao(solicitacao)" 
-                  class="btn btn-success-outline"
-                  :disabled="processandoId === solicitacao.idsolicitacoes"
-                >
-                  <i class="fas fa-check"></i> Aprovar
-                </button>
-                <button 
-                  @click="abrirRejeitarModal(solicitacao)" 
-                  class="btn btn-danger-outline"
-                  :disabled="processandoId === solicitacao.idsolicitacoes"
-                >
-                  <i class="fas fa-times"></i> Rejeitar
-                </button>
-              </div>
-              
-              <div v-else-if="solicitacao.status === 'aprovado'" class="solicitacao-actions">
-                <button 
-                  @click="marcarEntregue(solicitacao)" 
-                  class="btn btn-primary-outline"
-                  :disabled="processandoId === solicitacao.idsolicitacoes"
-                >
-                  <i class="fas fa-box"></i> Entregar
-                </button>
-              </div>
-
-              <div v-else-if="solicitacao.status === 'entregue'" class="solicitacao-actions">
-                <button 
-                  @click="marcarDevolvido(solicitacao)" 
-                  class="btn btn-purple-outline"
-                  :disabled="processandoId === solicitacao.idsolicitacoes"
-                >
-                  <i class="fas fa-undo"></i> Devolver
-                </button>
+            <!-- Body -->
+            <div class="sol-body">
+              <p class="epi-name">{{ sol.epis?.nome }}</p>
+              <div class="epi-tags">
+                <span class="tag">{{ sol.epis?.tipo || 'N/A' }}</span>
+                <span class="tag">{{ formatDate(sol.data_solicitacao) }}</span>
               </div>
             </div>
 
-            <div v-if="solicitacao.motivo_rejeicao" class="motivo-rejeicao">
-              <i class="fas fa-exclamation-circle"></i>
-              <div>
-                <strong>Motivo da rejeição:</strong>
-                <p>{{ solicitacao.motivo_rejeicao }}</p>
-              </div>
+            <!-- Motivo rejeição -->
+            <div v-if="sol.motivo_rejeicao" class="motivo-box">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2L15 13.5H1L8 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round" />
+                <path d="M8 6.5v3M8 11.8v.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+              <div><strong>Motivo:</strong> {{ sol.motivo_rejeicao }}</div>
+            </div>
+
+            <!-- Ações -->
+            <div class="sol-actions" v-if="sol.status === 'pendente'">
+              <button @click="aprovarSolicitacao(sol)" :disabled="processandoId === sol.idsolicitacoes"
+                class="btn-aprovar">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <path d="M2 7l3.5 3.5L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                Aprovar
+              </button>
+              <button @click="abrirRejeitarModal(sol)" :disabled="processandoId === sol.idsolicitacoes"
+                class="btn-rejeitar">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                Rejeitar
+              </button>
+            </div>
+            <div class="sol-actions" v-else-if="sol.status === 'aprovado'">
+              <button @click="marcarEntregue(sol)" :disabled="processandoId === sol.idsolicitacoes"
+                class="btn-entregar">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 4l6-3 6 3v8l-6 3-6-3V4z" />
+                  <path d="M8 7v8M2 4l6 3 6-3" />
+                </svg>
+                Marcar Entregue
+              </button>
+            </div>
+            <div class="sol-actions" v-else-if="sol.status === 'entregue'">
+              <button @click="marcarDevolvido(sol)" :disabled="processandoId === sol.idsolicitacoes"
+                class="btn-devolver">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <path d="M2 7h8M6 4l-4 3 4 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                Marcar Devolvido
+              </button>
             </div>
           </div>
         </div>
       </main>
     </div>
 
-    <Transition name="modal-fade">
+    <!-- Modal Rejeitar -->
+    <Transition name="fade">
       <div v-if="showRejeitarModal" class="modal-overlay" @click="fecharRejeitarModal">
-        <div class="modal-content" @click.stop>
-          <div class="modal-header">
-            <h3>Rejeitar Solicitação</h3>
-            <button class="btn-close" @click="fecharRejeitarModal"><i class="fas fa-times"></i></button>
+        <div class="modal-box" @click.stop>
+          <div class="modal-head">
+            <h2>Rejeitar Solicitação</h2>
+            <button class="btn-close-modal" @click="fecharRejeitarModal">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 3L13 13M13 3L3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </button>
           </div>
           <div class="modal-body">
-            <p>Deseja realmente rejeitar a solicitação de <strong>{{ solicitacaoSelecionada?.aluno?.nome }}</strong>?</p>
+            <p>Rejeitar solicitação de <strong>{{ solicitacaoSelecionada?.aluno?.nome }}</strong>?</p>
             <div class="form-group">
-              <label for="motivo">Motivo da rejeição (opcional)</label>
-              <textarea 
-                id="motivo"
-                v-model="motivoRejeicao" 
-                placeholder="Explique o motivo da rejeição para o aluno..."
-                class="form-input textarea-input"
-              ></textarea>
+              <label>Motivo (opcional)</label>
+              <textarea v-model="motivoRejeicao" placeholder="Explique o motivo da rejeição..."
+                class="textarea"></textarea>
             </div>
           </div>
-          <div class="modal-footer">
-            <button @click="fecharRejeitarModal" class="btn btn-secondary">Cancelar</button>
-            <button @click="confirmarRejeicao" class="btn btn-danger-solid">Confirmar Rejeição</button>
+          <div class="modal-foot">
+            <button @click="fecharRejeitarModal" class="btn-cancel-modal">Cancelar</button>
+            <button @click="confirmarRejeicao" class="btn-confirm-reject">Confirmar Rejeição</button>
           </div>
         </div>
       </div>
@@ -161,13 +169,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import SidebarACE from '../components/SidebarACE.vue'
 import { useSupabase } from '../composables/useSupabase'
-import { useRouter } from 'vue-router'
 
-const { supabase, session, registrarEntregaEPI, removerEntregaEPI } = useSupabase()
-const router = useRouter()
+const { supabase, registrarEntregaEPI, removerEntregaEPI } = useSupabase()
+
+const sidebarRef = ref(null)
+const openMobileSidebar = () => { if (sidebarRef.value) sidebarRef.value.mobileOpen = true }
 
 const solicitacoes = ref([])
 const searchQuery = ref('')
@@ -178,680 +187,687 @@ const solicitacaoSelecionada = ref(null)
 const motivoRejeicao = ref('')
 const processandoId = ref(null)
 
-const filteredSolicitacoes = computed(() => {
-  return solicitacoes.value.filter(sol => {
-    const matchesSearch = !searchQuery.value || 
-      sol.aluno?.nome.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      sol.aluno?.email.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      sol.epis?.nome.toLowerCase().includes(searchQuery.value.toLowerCase())
-    
-    const matchesStatus = !statusFilter.value || sol.status === statusFilter.value
-    
-    return matchesSearch && matchesStatus
-  })
-})
+const filteredSolicitacoes = computed(() => solicitacoes.value.filter(sol => {
+  const q = searchQuery.value.toLowerCase()
+  const matchesSearch = !q ||
+    sol.aluno?.nome.toLowerCase().includes(q) ||
+    sol.aluno?.email.toLowerCase().includes(q) ||
+    sol.epis?.nome.toLowerCase().includes(q)
+  const matchesStatus = !statusFilter.value || sol.status === statusFilter.value
+  return matchesSearch && matchesStatus
+}))
 
-const getFotoUrl = (aluno) => {
-  if (aluno?.foto) return aluno.foto;
-  
-  const inicialNome = aluno?.nome?.charAt(0) || '';
-  const inicialSobrenome = aluno?.sobrenome?.charAt(0) || '';
-  const iniciais = `${inicialNome}${inicialSobrenome}`.toUpperCase() || 'AL';
-  
-  return `https://ui-avatars.com/api/?name=${iniciais}&background=2563EB&color=fff&size=128`;
+const getIniciais = (aluno) => {
+  const n = aluno?.nome?.charAt(0) || ''
+  const s = aluno?.sobrenome?.charAt(0) || ''
+  return (n + s).toUpperCase() || 'AL'
 }
 
-const formatDate = (dateString) => {
-  if (!dateString) return '---'
-  return new Date(dateString).toLocaleDateString('pt-BR')
-}
+const formatDate = (d) => d ? new Date(d).toLocaleDateString('pt-BR') : '---'
 
-const getStatusText = (status) => {
-  const statusMap = {
-    pendente: 'Pendente',
-    aprovado: 'Aprovado',
-    rejeitado: 'Rejeitado',
-    entregue: 'Entregue',
-    devolvido: 'Devolvido'
-  }
-  return statusMap[status] || status
-}
+const getStatusText = (s) => ({ pendente: 'Pendente', aprovado: 'Aprovado', rejeitado: 'Rejeitado', entregue: 'Entregue', devolvido: 'Devolvido' }[s] || s)
 
 const loadSolicitacoes = async () => {
   try {
-    const { data, error } = await supabase
-      .from('solicitacoes')
-      .select(`
-        idsolicitacoes,
-        aluno_id,
-        epis_id,
-        status,
-        data_solicitacao,
-        data_aprovacao,
-        data_entrega,
-        data_devolucao,
-        motivo_rejeicao,
-        aluno:aluno_id (
-          nome,
-          sobrenome,
-          email,
-          cpf,
-          foto
-        ),
-        epis:epis_id (
-          nome,
-          tipo,
-          codigo_patrimonio
-        )
-      `)
+    const { data, error } = await supabase.from('solicitacoes')
+      .select(`idsolicitacoes, aluno_id, epis_id, status, data_solicitacao, data_aprovacao, data_entrega, data_devolucao, motivo_rejeicao,
+        aluno:aluno_id (nome, sobrenome, email, foto),
+        epis:epis_id (nome, tipo, codigo_patrimonio)`)
       .order('data_solicitacao', { ascending: false })
-
     if (error) throw error
     solicitacoes.value = data || []
-  } catch (error) {
-    console.error('Erro ao carregar solicitações:', error)
-  } finally {
-    loading.value = false
-  }
+  } catch (e) { console.error(e) } finally { loading.value = false }
 }
 
-const aprovarSolicitacao = async (solicitacao) => {
-  if (!confirm(`Aprovar solicitação de ${solicitacao.aluno?.nome}?`)) return
-  processandoId.value = solicitacao.idsolicitacoes
-
+const aprovarSolicitacao = async (sol) => {
+  if (!confirm(`Aprovar solicitação de ${sol.aluno?.nome}?`)) return
+  processandoId.value = sol.idsolicitacoes
   try {
-    const { error } = await supabase
-      .from('solicitacoes')
-      .update({
-        status: 'aprovado',
-        data_aprovacao: new Date().toISOString().split('T')[0]
-      })
-      .eq('idsolicitacoes', solicitacao.idsolicitacoes)
-
+    const { error } = await supabase.from('solicitacoes').update({ status: 'aprovado', data_aprovacao: new Date().toISOString().split('T')[0] }).eq('idsolicitacoes', sol.idsolicitacoes)
     if (error) throw error
     loadSolicitacoes()
-  } catch (error) {
-    console.error('Erro ao aprovar solicitação:', error)
-    alert('Erro ao aprovar solicitação: ' + error.message)
-  } finally {
-    processandoId.value = null
-  }
+  } catch (e) { alert('Erro: ' + e.message) } finally { processandoId.value = null }
 }
 
-const abrirRejeitarModal = (solicitacao) => {
-  solicitacaoSelecionada.value = solicitacao
-  motivoRejeicao.value = ''
-  showRejeitarModal.value = true
-}
-
-const fecharRejeitarModal = () => {
-  showRejeitarModal.value = false
-  solicitacaoSelecionada.value = null
-  motivoRejeicao.value = ''
-}
+const abrirRejeitarModal = (sol) => { solicitacaoSelecionada.value = sol; motivoRejeicao.value = ''; showRejeitarModal.value = true }
+const fecharRejeitarModal = () => { showRejeitarModal.value = false; solicitacaoSelecionada.value = null; motivoRejeicao.value = '' }
 
 const confirmarRejeicao = async () => {
   if (!solicitacaoSelecionada.value) return
   processandoId.value = solicitacaoSelecionada.value.idsolicitacoes
-
   try {
-    const { error } = await supabase
-      .from('solicitacoes')
-      .update({
-        status: 'rejeitado',
-        motivo_rejeicao: motivoRejeicao.value || null
-      })
-      .eq('idsolicitacoes', solicitacaoSelecionada.value.idsolicitacoes)
-
+    const { error } = await supabase.from('solicitacoes').update({ status: 'rejeitado', motivo_rejeicao: motivoRejeicao.value || null }).eq('idsolicitacoes', solicitacaoSelecionada.value.idsolicitacoes)
     if (error) throw error
-    fecharRejeitarModal()
-    loadSolicitacoes()
-  } catch (error) {
-    console.error('Erro ao rejeitar solicitação:', error)
-    alert('Erro ao rejeitar solicitação: ' + error.message)
-  } finally {
-    processandoId.value = null
-  }
+    fecharRejeitarModal(); loadSolicitacoes()
+  } catch (e) { alert('Erro: ' + e.message) } finally { processandoId.value = null }
 }
 
-const marcarEntregue = async (solicitacao) => {
+const marcarEntregue = async (sol) => {
   if (!confirm('Confirmar entrega do EPI ao aluno?')) return
-  processandoId.value = solicitacao.idsolicitacoes
-
+  processandoId.value = sol.idsolicitacoes
   try {
-    const { error: updateError } = await supabase
-      .from('solicitacoes')
-      .update({
-        status: 'entregue',
-        data_entrega: new Date().toISOString().split('T')[0]
-      })
-      .eq('idsolicitacoes', solicitacao.idsolicitacoes)
-
-    if (updateError) throw updateError
-
-    const dataEntrega = new Date().toISOString().split('T')[0]
-    await registrarEntregaEPI(
-      solicitacao.aluno_id,
-      solicitacao.epis_id,
-      dataEntrega
-    )
+    const hoje = new Date().toISOString().split('T')[0]
+    const { error } = await supabase.from('solicitacoes').update({ status: 'entregue', data_entrega: hoje }).eq('idsolicitacoes', sol.idsolicitacoes)
+    if (error) throw error
+    await registrarEntregaEPI(sol.aluno_id, sol.epis_id, hoje)
     loadSolicitacoes()
-  } catch (error) {
-    console.error('Erro ao marcar como entregue:', error)
-    alert('Erro: ' + error.message)
-  } finally {
-    processandoId.value = null
-  }
+  } catch (e) { alert('Erro: ' + e.message) } finally { processandoId.value = null }
 }
 
-const marcarDevolvido = async (solicitacao) => {
+const marcarDevolvido = async (sol) => {
   if (!confirm('Confirmar devolução do EPI?')) return
-  processandoId.value = solicitacao.idsolicitacoes
-
+  processandoId.value = sol.idsolicitacoes
   try {
-    const { error: updateError } = await supabase
-      .from('solicitacoes')
-      .update({
-        status: 'devolvido',
-        data_devolucao: new Date().toISOString().split('T')[0]
-      })
-      .eq('idsolicitacoes', solicitacao.idsolicitacoes)
-
-    if (updateError) throw updateError
-
-    await removerEntregaEPI(solicitacao.aluno_id, solicitacao.epis_id)
+    const { error } = await supabase.from('solicitacoes').update({ status: 'devolvido', data_devolucao: new Date().toISOString().split('T')[0] }).eq('idsolicitacoes', sol.idsolicitacoes)
+    if (error) throw error
+    await removerEntregaEPI(sol.aluno_id, sol.epis_id)
     loadSolicitacoes()
-  } catch (error) {
-    console.error('Erro ao marcar como devolvido:', error)
-    alert('Erro: ' + error.message)
-  } finally {
-    processandoId.value = null
-  }
+  } catch (e) { alert('Erro: ' + e.message) } finally { processandoId.value = null }
 }
 
 const aceitarTodos = async () => {
   const pendentes = solicitacoes.value.filter(s => s.status === 'pendente')
-  if (pendentes.length === 0) return
-
-  const confirmar = confirm(`Deseja aceitar todas as ${pendentes.length} solicitações pendentes?`)
-  if (!confirmar) return
-
+  if (!pendentes.length || !confirm(`Aceitar todas as ${pendentes.length} solicitações pendentes?`)) return
   try {
-    for (const solicitacao of pendentes) {
-      await supabase
-        .from('solicitacoes')
-        .update({
-          status: 'aprovado',
-          data_aprovacao: new Date().toISOString().split('T')[0]
-        })
-        .eq('idsolicitacoes', solicitacao.idsolicitacoes)
+    for (const sol of pendentes) {
+      await supabase.from('solicitacoes').update({ status: 'aprovado', data_aprovacao: new Date().toISOString().split('T')[0] }).eq('idsolicitacoes', sol.idsolicitacoes)
     }
     loadSolicitacoes()
-  } catch (error) {
-    console.error('Erro ao aceitar todos:', error)
-    alert('Erro ao aceitar todos: ' + error.message)
-  }
+  } catch (e) { alert('Erro: ' + e.message) }
 }
 
-onMounted(() => {
-  loadSolicitacoes()
-})
+onMounted(loadSolicitacoes)
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
-* {
-  box-sizing: border-box;
-}
-
-/* Layout Base idêntico ao Dashboard */
 .app-layout {
-  display: flex;
-  flex-direction: row; 
-  min-height: 100vh;
-  background-color: #f1f5f9;
-  font-family: 'IBM Plex Sans', sans-serif;
+  --c-dark: #1E3D58;
+  --c-accent: #43B0F1;
+  --c-bg: #F5F5F0;
+  --c-surface: #FFFFFF;
+  --c-text: #1E3D58;
+  --c-muted: #5A7187;
+  --c-faint: #8FA3B5;
+  --c-border: #E2E5EA;
 
+  min-height: 100vh;
+  background: var(--c-bg);
+  font-family: 'IBM Plex Sans', sans-serif;
+  overflow-x: hidden;
 }
 
 .main-wrapper {
-  flex: 1;
+  margin-left: 232px;
   display: flex;
   flex-direction: column;
   min-width: 0;
-}
-
-  dashboard-main {
-  padding: 24px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 1400px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-/* Tipografia de Cabeçalho */
-.page-header {
-  margin-bottom: 8px;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .top-header {
-  background: white;
-  padding: 1.5rem 2rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e2e8f0;
+  padding: 1.4rem 2rem;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .page-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
   margin: 0;
+  line-height: 1.2;
 }
 
-.page-subtitle {
-  color: #64748b;
-  font-size: 0.875rem;
-  margin: 0;
+.page-sub {
+  font-size: 0.8rem;
+  color: var(--c-faint);
+  margin: 3px 0 0 0;
 }
 
-/* Cards Gerais */
-.card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 20px;
-  border: 1px solid #e5e9f0;
-}
-
-/* Filtros */
-.filters-section {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+.hamburger {
+  display: none;
   align-items: center;
-  padding: 16px 20px;
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  background: #f8fafc;
-  border: 1px solid #e5e9f0;
-  border-radius: 6px;
-  padding: 0 12px;
-  flex: 1;
-  min-width: 250px;
-  transition: border-color 0.2s;
-}
-
-.search-box:focus-within {
-  border-color: #2563EB;
-}
-
-.search-icon {
-  color: #94a3b8;
-  font-size: 0.875rem;
-}
-
-.form-input {
-  border: none;
-  background: transparent;
-  padding: 10px;
-  font-family: inherit;
-  font-size: 0.875rem;
-  color: #1e293b;
-  width: 100%;
-  outline: none;
-}
-
-.select-input {
-  border: 1px solid #e5e9f0;
-  border-radius: 6px;
-  padding: 10px 12px;
-  background: #ffffff;
-  color: #475569;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
   cursor: pointer;
-  width: auto;
-  transition: border-color 0.2s;
+  color: var(--c-text);
+  flex-shrink: 0;
 }
 
-.select-input:focus {
-  border-color: #2563EB;
-}
-
-/* Botões */
-.btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 600;
-  transition: all 0.2s;
-  font-family: inherit;
-  border: 1px solid transparent;
-}
-
-.btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-success-solid { background-color: #22c55e; color: white; }
-.btn-success-solid:hover:not(:disabled) { background-color: #16a34a; }
-
-.btn-success-outline { background-color: #dcfce7; color: #16a34a; }
-.btn-success-outline:hover:not(:disabled) { background-color: #bbf7d0; }
-
-.btn-danger-outline { background-color: #fef2f2; color: #ef4444; }
-.btn-danger-outline:hover:not(:disabled) { background-color: #fecaca; }
-
-.btn-danger-solid { background-color: #ef4444; color: white; }
-.btn-danger-solid:hover:not(:disabled) { background-color: #dc2626; }
-
-.btn-primary-outline { background-color: #eff6ff; color: #2563EB; }
-.btn-primary-outline:hover:not(:disabled) { background-color: #dbeafe; }
-
-.btn-purple-outline { background-color: #f3e8ff; color: #9333ea; }
-.btn-purple-outline:hover:not(:disabled) { background-color: #e9d5ff; }
-
-.btn-secondary { background-color: #f1f5f9; color: #475569; }
-.btn-secondary:hover:not(:disabled) { background-color: #e2e8f0; }
-
-/* Grid de Solicitações */
-.solicitacoes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 16px;
-}
-
-.solicitacao-card {
+.content-main {
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.solicitacao-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  border-bottom: 1px solid #f1f5f9;
-  padding-bottom: 12px;
+/* Filtros */
+.card {
+  background: var(--c-surface);
+  border-radius: 14px;
+  border: 1px solid var(--c-border);
+  box-shadow: 0 2px 8px rgba(30, 61, 88, .04);
 }
 
-.aluno-perfil-wrapper {
+.filters-bar {
   display: flex;
   gap: 12px;
   align-items: center;
+  padding: 14px 18px;
+  flex-wrap: wrap;
 }
 
-.aluno-foto {
-  width: 40px;
-  height: 40px;
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 220px;
+  background: #FAFAF7;
+  border: 1px solid var(--c-border);
+  border-radius: 9px;
+  padding: 10px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-wrap:focus-within {
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px rgba(67, 176, 241, .1);
+  background: #fff;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.875rem;
+  color: var(--c-text);
+  width: 100%;
+  font-family: inherit;
+}
+
+.search-input::placeholder {
+  color: var(--c-faint);
+}
+
+.filter-select {
+  padding: 10px 14px;
+  border: 1px solid var(--c-border);
+  border-radius: 9px;
+  background: var(--c-surface);
+  color: var(--c-muted);
+  font-size: 0.875rem;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+  border-color: var(--c-accent);
+}
+
+.btn-accept-all {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34, 197, 94, .12);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, .2);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 0.845rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-accept-all:hover {
+  background: rgba(34, 197, 94, .2);
+}
+
+/* States */
+.state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 56px;
+  background: var(--c-surface);
+  border-radius: 14px;
+  border: 1px solid var(--c-border);
+  color: var(--c-faint);
+  font-size: 0.875rem;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(67, 176, 241, .2);
+  border-top-color: var(--c-accent);
   border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid #e5e9f0;
+  animation: spin .7s linear infinite;
 }
 
-.aluno-info h3 {
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Grid */
+.sol-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.sol-card {
+  background: var(--c-surface);
+  border-radius: 14px;
+  border: 1px solid var(--c-border);
+  box-shadow: 0 2px 8px rgba(30, 61, 88, .04);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.sol-card:hover {
+  box-shadow: 0 8px 20px rgba(30, 61, 88, .08);
+  transform: translateY(-2px);
+}
+
+.sol-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #EDF0F2;
+}
+
+.aluno-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.aluno-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(67, 176, 241, .12);
+  color: var(--c-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.aluno-name {
   font-size: 0.875rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
   margin: 0 0 2px 0;
 }
 
 .aluno-email {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--c-faint);
   margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
-/* Badges */
-.status-badge {
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 0.72rem;
+.status-pill {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.status-pendente { background-color: #fffbeb; color: #d97706; }
-.status-aprovado { background-color: #dcfce7; color: #16a34a; }
-.status-rejeitado { background-color: #fef2f2; color: #ef4444; }
-.status-entregue { background-color: #eff6ff; color: #2563EB; }
-.status-devolvido { background-color: #f1f5f9; color: #64748b; }
+.status-pill.pendente {
+  background: rgba(245, 158, 11, .12);
+  color: #92400e;
+}
 
-/* Body do Card */
-.solicitacao-body {
+.status-pill.aprovado {
+  background: rgba(34, 197, 94, .12);
+  color: #166534;
+}
+
+.status-pill.rejeitado {
+  background: rgba(239, 68, 68, .1);
+  color: #991b1b;
+}
+
+.status-pill.entregue {
+  background: rgba(67, 176, 241, .12);
+  color: #1E3D58;
+}
+
+.status-pill.devolvido {
+  background: rgba(100, 116, 139, .1);
+  color: #5A7187;
+}
+
+.sol-body {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  flex: 1;
+  gap: 8px;
 }
 
-.epi-info h4 {
-  font-size: 0.875rem;
+.epi-name {
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #334155;
-  margin: 0 0 8px 0;
+  color: var(--c-text);
+  margin: 0;
 }
 
-.epi-details {
+.epi-tags {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: #FAFAF7;
+  border: 1px solid var(--c-border);
+  border-radius: 6px;
+  padding: 3px 10px;
   font-size: 0.75rem;
-  color: #94a3b8;
-}
-
-.epi-tag, .epi-date {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #f8fafc;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid #e5e9f0;
+  color: var(--c-muted);
   font-weight: 500;
 }
 
-.solicitacao-actions {
+.motivo-box {
   display: flex;
+  align-items: flex-start;
   gap: 8px;
-  margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px dashed #e5e9f0;
-}
-
-.solicitacao-actions .btn {
-  flex: 1;
-  justify-content: center;
-}
-
-.motivo-rejeicao {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
+  background: rgba(239, 68, 68, .06);
+  border: 1px solid rgba(239, 68, 68, .15);
+  border-radius: 8px;
   padding: 10px 12px;
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
   font-size: 0.78rem;
   color: #991b1b;
 }
 
-.motivo-rejeicao i {
-  margin-top: 2px;
-}
-
-.motivo-rejeicao strong {
-  display: block;
-  margin-bottom: 2px;
-  color: #7f1d1d;
-}
-
-.motivo-rejeicao p {
-  margin: 0;
-}
-
-/* Loading & Empty States */
-.state-container {
-  text-align: center;
-  padding: 64px 20px;
-  color: #94a3b8;
+.sol-actions {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  background: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #e5e9f0;
+  gap: 8px;
 }
 
-.state-icon {
-  font-size: 2.5rem;
-  color: #cbd5e1;
+.btn-aprovar,
+.btn-rejeitar,
+.btn-entregar,
+.btn-devolver {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px;
+  border-radius: 9px;
+  font-size: 0.845rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.btn-aprovar {
+  background: rgba(34, 197, 94, .12);
+  color: #16a34a;
+  border-color: rgba(34, 197, 94, .2);
+}
+
+.btn-aprovar:hover:not(:disabled) {
+  background: rgba(34, 197, 94, .2);
+}
+
+.btn-rejeitar {
+  background: rgba(239, 68, 68, .08);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, .15);
+}
+
+.btn-rejeitar:hover:not(:disabled) {
+  background: rgba(239, 68, 68, .15);
+}
+
+.btn-entregar {
+  background: rgba(67, 176, 241, .1);
+  color: var(--c-accent);
+  border-color: rgba(67, 176, 241, .2);
+}
+
+.btn-entregar:hover:not(:disabled) {
+  background: rgba(67, 176, 241, .18);
+}
+
+.btn-devolver {
+  background: rgba(139, 92, 246, .1);
+  color: #7c3aed;
+  border-color: rgba(139, 92, 246, .2);
+}
+
+.btn-devolver:hover:not(:disabled) {
+  background: rgba(139, 92, 246, .18);
+}
+
+.btn-aprovar:disabled,
+.btn-rejeitar:disabled,
+.btn-entregar:disabled,
+.btn-devolver:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Modal */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(2px);
+  inset: 0;
+  background: rgba(15, 23, 42, .45);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 50;
-  padding: 20px;
+  z-index: 500;
+  backdrop-filter: blur(3px);
 }
 
-.modal-content {
-  background: #ffffff;
-  border-radius: 10px;
-  width: 100%;
-  max-width: 480px;
-  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
-  border: 1px solid #e5e9f0;
+.modal-box {
+  background: var(--c-surface);
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 460px;
+  width: 90%;
+  box-shadow: 0 24px 64px rgba(30, 61, 88, .18);
 }
 
-.modal-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid #e5e9f0;
+.modal-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
 }
 
-.modal-header h3 {
-  margin: 0;
+.modal-head h2 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
+  margin: 0;
 }
 
-.btn-close {
+.btn-close-modal {
   background: none;
   border: none;
-  font-size: 1.2rem;
-  color: #94a3b8;
   cursor: pointer;
-  transition: color 0.2s;
+  color: var(--c-faint);
+  padding: 6px;
+  border-radius: 7px;
+  display: flex;
+  transition: color 0.15s, background 0.15s;
 }
 
-.btn-close:hover {
-  color: #1e293b;
+.btn-close-modal:hover {
+  color: #dc2626;
+  background: rgba(239, 68, 68, .06);
 }
 
 .modal-body {
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .modal-body p {
   font-size: 0.875rem;
-  color: #475569;
-  margin: 0 0 16px 0;
+  color: var(--c-muted);
+  margin: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .form-group label {
-  display: block;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: #475569;
-  margin-bottom: 8px;
+  color: var(--c-muted);
 }
 
-.textarea-input {
-  border: 1px solid #e5e9f0;
-  border-radius: 6px;
-  padding: 10px 12px;
+.textarea {
+  border: 1px solid var(--c-border);
+  border-radius: 9px;
+  padding: 10px 13px;
   font-family: inherit;
   font-size: 0.875rem;
-  color: #1e293b;
-  width: 100%;
-  min-height: 100px;
+  color: var(--c-text);
+  background: #FAFAF7;
   resize: vertical;
-  transition: border-color 0.2s;
-}
-
-.textarea-input:focus {
+  min-height: 90px;
   outline: none;
-  border-color: #2563EB;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.modal-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #e5e9f0;
+.textarea:focus {
+  border-color: var(--c-accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(67, 176, 241, .1);
+}
+
+.modal-foot {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  background: #f8fafc;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-.modal-fade-enter-active, .modal-fade-leave-active {
-  transition: opacity 0.2s ease;
+.btn-cancel-modal {
+  background: #EDF0F2;
+  color: var(--c-muted);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.modal-fade-enter-from, .modal-fade-leave-to {
+.btn-cancel-modal:hover {
+  background: #DDE2E8;
+}
+
+.btn-confirm-reject {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-confirm-reject:hover {
+  background: #b91c1c;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-  .dashboard-main {
-    padding: 16px;
-  }
-  
-  .solicitacoes-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 900px) {
+  .main-wrapper {
+    margin-left: 0;
   }
 
-  .filters-section {
+  .hamburger {
+    display: flex;
+  }
+
+  .content-main {
+    padding: 16px;
+  }
+
+  .top-header {
+    padding: 12px 16px;
+  }
+
+  .sol-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .filters-bar {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .select-input, .btn-success-solid {
-    width: 100%;
-    justify-content: center;
+  .page-sub {
+    display: none;
   }
 }
 </style>

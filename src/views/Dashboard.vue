@@ -1,10 +1,16 @@
 <template>
   <div class="app-layout">
-    <component :is="isAdmin ? SidebarACE : SidebarAluno" />
+    <component :is="isAdmin ? SidebarACE : SidebarAluno" ref="sidebarRef" />
 
     <div class="main-wrapper">
       <header class="top-header">
         <div class="header-left">
+          <!-- Hambúrguer — só mobile -->
+          <button class="hamburger" @click="openMobileSidebar">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </button>
           <h1 class="page-title">Dashboard</h1>
         </div>
         <div class="header-right">
@@ -26,59 +32,99 @@
           <template v-if="isAdmin">
             <div class="stat-card">
               <div class="stat-header">
-                <span class="stat-label">TOTAL DE EPIs</span>
-                <span class="stat-icon-wrap total">📦</span>
+                <span class="stat-label">Total de EPIs</span>
+                <span class="stat-icon-wrap total">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 4l6-3 6 3v8l-6 3-6-3V4z" />
+                    <path d="M8 7v8M2 4l6 3 6-3" />
+                  </svg>
+                </span>
               </div>
               <div class="stat-number">{{ stats.total }}</div>
               <div class="stat-sub">Todos os EPIs registrados</div>
             </div>
             <div class="stat-card">
               <div class="stat-header">
-                <span class="stat-label">DISPONÍVEL</span>
-                <span class="stat-icon-wrap avail">✓</span>
+                <span class="stat-label">Disponível</span>
+                <span class="stat-icon-wrap avail">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 8.5l3.5 3.5L13 5" />
+                  </svg>
+                </span>
               </div>
               <div class="stat-number">{{ stats.disponivel }}</div>
               <div class="stat-sub">{{ stats.percentualDisponibilidade }}% do total</div>
             </div>
             <div class="stat-card">
               <div class="stat-header">
-                <span class="stat-label">EM USO</span>
-                <span class="stat-icon-wrap inuse">⚙️</span>
+                <span class="stat-label">Em Uso</span>
+                <span class="stat-icon-wrap inuse">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="8" cy="8" r="6" />
+                    <path d="M8 5v3l2 2" />
+                  </svg>
+                </span>
               </div>
               <div class="stat-number">{{ stats.emUso }}</div>
               <div class="stat-sub">{{ stats.emUso }} entregas ativas</div>
             </div>
             <div class="stat-card">
               <div class="stat-header">
-                <span class="stat-label">VENCIDOS / ALERTA</span>
-                <span class="stat-icon-wrap alert">⚠️</span>
+                <span class="stat-label">Vencidos / Alerta</span>
+                <span class="stat-icon-wrap alert">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 2L15 13.5H1L8 2z" />
+                    <path d="M8 6.5v3M8 11.8v.2" />
+                  </svg>
+                </span>
               </div>
               <div class="stat-number">{{ alertas.length }}</div>
-              <div class="stat-sub warn">⚠️ Requer atenção</div>
+              <div class="stat-sub warn">Requer atenção</div>
             </div>
           </template>
 
           <template v-else>
             <div class="stat-card">
               <div class="stat-header">
-                <span class="stat-label">EPIs DISPONÍVEIS</span>
-                <span class="stat-icon-wrap avail">✓</span>
+                <span class="stat-label">EPIs Disponíveis</span>
+                <span class="stat-icon-wrap avail">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 8.5l3.5 3.5L13 5" />
+                  </svg>
+                </span>
               </div>
               <div class="stat-number">{{ stats.disponivel }}</div>
               <div class="stat-sub">Disponíveis para solicitação</div>
             </div>
             <div class="stat-card">
               <div class="stat-header">
-                <span class="stat-label">MEUS EPIs</span>
-                <span class="stat-icon-wrap inuse">⚙️</span>
+                <span class="stat-label">Meus EPIs</span>
+                <span class="stat-icon-wrap inuse">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="8" cy="8" r="6" />
+                    <path d="M8 5v3l2 2" />
+                  </svg>
+                </span>
               </div>
               <div class="stat-number">{{ meusEPIs }}</div>
               <div class="stat-sub">EPIs em uso</div>
             </div>
             <div class="stat-card">
               <div class="stat-header">
-                <span class="stat-label">SOLICITAÇÕES</span>
-                <span class="stat-icon-wrap total">📋</span>
+                <span class="stat-label">Solicitações</span>
+                <span class="stat-icon-wrap total">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="12" height="12" rx="2" />
+                    <path d="M5 8h6M5 5h6M5 11h4" />
+                  </svg>
+                </span>
               </div>
               <div class="stat-number">{{ minhasSolicitacoes }}</div>
               <div class="stat-sub">Total de solicitações</div>
@@ -121,7 +167,8 @@
             <h2 class="card-title">Atividade</h2>
             <div class="atividade-list">
               <div v-for="(a, idx) in atividades" :key="idx" class="ativ-item">
-                <span class="ativ-dot" :class="a.type === 'entrega' ? 'green' : a.type === 'devolucao' ? 'red' : 'yellow'"></span>
+                <span class="ativ-dot"
+                  :class="a.type === 'entrega' ? 'green' : a.type === 'devolucao' ? 'red' : 'yellow'"></span>
                 <span class="ativ-text">{{ a.text }}</span>
                 <span class="ativ-time">{{ a.time }}</span>
               </div>
@@ -136,10 +183,10 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>NOME</th>
+                  <th>Nome</th>
                   <th>EPI</th>
-                  <th>DATA</th>
-                  <th>STATUS</th>
+                  <th>Data</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -147,7 +194,7 @@
                   <td>{{ entrega.aluno.nome }} {{ entrega.aluno.sobrenome }}</td>
                   <td>{{ entrega.epis.nome }}</td>
                   <td>{{ formatDate(entrega.data_entrega) }}</td>
-                  <td><span class="badge-ativo">ATIVO</span></td>
+                  <td><span class="badge badge--ativo">Ativo</span></td>
                 </tr>
                 <tr v-if="!entregasRecentes.length">
                   <td colspan="4" class="no-data">Nenhuma entrega recente</td>
@@ -164,13 +211,13 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>NOME</th>
-                  <th>EMAIL</th>
+                  <th>Nome</th>
+                  <th>Email</th>
                   <th>EPI</th>
-                  <th>PATRIMÔNIO</th>
-                  <th>DATA ENTREGA</th>
-                  <th>TIPO</th>
-                  <th>STATUS</th>
+                  <th>Patrimônio</th>
+                  <th>Data Entrega</th>
+                  <th>Tipo</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -180,8 +227,8 @@
                   <td>{{ func.epis.nome }}</td>
                   <td>{{ func.epis.codigo_patrimonio || '---' }}</td>
                   <td>{{ formatDate(func.data_entrega) }}</td>
-                  <td><span class="badge-tipo">👨‍💼 Funcionário</span></td>
-                  <td><span class="badge-urgente">⚠️ URGENTE</span></td>
+                  <td><span class="badge badge--tipo">Funcionário</span></td>
+                  <td><span class="badge badge--urgente">Urgente</span></td>
                 </tr>
                 <tr v-for="aluno in alunosEPIs" :key="`aluno-${aluno.id_entrega_aluno}`">
                   <td>{{ aluno.aluno.nome }} {{ aluno.aluno.sobrenome }}</td>
@@ -189,8 +236,8 @@
                   <td>{{ aluno.epis.nome }}</td>
                   <td>{{ aluno.epis.codigo_patrimonio || '---' }}</td>
                   <td>{{ formatDate(aluno.data_entrega) }}</td>
-                  <td><span class="badge-tipo">👨‍🎓 Aluno</span></td>
-                  <td><span class="badge-urgente">⚠️ URGENTE</span></td>
+                  <td><span class="badge badge--tipo">Aluno</span></td>
+                  <td><span class="badge badge--urgente">Urgente</span></td>
                 </tr>
                 <tr v-if="!funcionariosEPIs.length && !alunosEPIs.length">
                   <td colspan="7" class="no-data">Nenhuma devolução pendente</td>
@@ -216,7 +263,12 @@
 <script setup>
 import SidebarACE from '../components/SidebarACE.vue'
 import SidebarAluno from '../components/SidebarAluno.vue'
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+
+const sidebarRef = ref(null)
+const openMobileSidebar = () => {
+  if (sidebarRef.value) sidebarRef.value.mobileOpen = true
+}
 import { createClient } from '@supabase/supabase-js'
 import { useSupabase } from '../composables/useSupabase'
 import { jsPDF } from 'jspdf'
@@ -299,14 +351,14 @@ onMounted(async () => {
 })
 
 // Atividades (renderiza eventos recentes: entregas, devoluções pendentes)
-import { computed, watch } from 'vue'
 const atividades = ref([])
 
 const buildAtividades = () => {
   const items = []
+
   // Prioriza entregas recentes
   if (entregasRecentes.value && entregasRecentes.value.length) {
-    entregasRecentes.value.slice(0,3).forEach(e => {
+    entregasRecentes.value.slice(0, 3).forEach(e => {
       items.push({
         type: 'entrega',
         text: `Entrega: ${e.epis?.nome} — ${e.aluno?.nome} ${e.aluno?.sobrenome}`,
@@ -317,15 +369,15 @@ const buildAtividades = () => {
 
   // Checa devoluções pendentes a partir de alunosEPIs/funcionariosEPIs (se admin)
   if (isAdmin.value) {
-    const pendentes = []
+    const pendentes = [];
     (funcionariosEPIs.value || []).forEach(f => {
       if (!f.data_devolucao) pendentes.push({ type: 'devolucao', text: `Devolução pendente: ${f.epis?.nome} — ${f.funcionario?.nome}`, time: formatDate(f.data_entrega) })
-    })
+    });
     (alunosEPIs.value || []).forEach(a => {
       if (!a.data_devolucao) pendentes.push({ type: 'devolucao', text: `Devolução pendente: ${a.epis?.nome} — ${a.aluno?.nome}`, time: formatDate(a.data_entrega) })
-    })
+    });
     // adiciona até completar 3 itens
-    pendentes.slice(0, 3 - items.length).forEach(p => items.push(p))
+    pendentes.slice(0, Math.max(0, 3 - items.length)).forEach(p => items.push(p))
   }
 
   // Fallback: mensagens estáticas se nada
@@ -335,7 +387,7 @@ const buildAtividades = () => {
     items.push({ type: 'inventario', text: 'Inventário atualizado', time: 'Há 8 horas' })
   }
 
-  atividades.value = items.slice(0,3)
+  atividades.value = items.slice(0, 3)
 }
 
 // Reconstrói atividades quando as fontes mudam
@@ -347,7 +399,7 @@ const exportarPDF = () => {
   const pageHeight = doc.internal.pageSize.getHeight()
   let y = 20
 
-  doc.setFillColor(37, 99, 235)
+  doc.setFillColor(30, 61, 88)
   doc.rect(0, 0, pageWidth, 30, 'F')
   doc.setTextColor(255, 255, 255)
   doc.setFontSize(20)
@@ -358,7 +410,7 @@ const exportarPDF = () => {
   doc.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 14, 27)
 
   y = 45
-  doc.setTextColor(30, 41, 59)
+  doc.setTextColor(30, 61, 88)
   doc.setFontSize(13)
   doc.setFont(undefined, 'bold')
   doc.text('Estatísticas', 14, y)
@@ -376,13 +428,13 @@ const exportarPDF = () => {
   statData.forEach(([label, val], i) => {
     const x = 14 + (i % 2) * 90
     const yy = y + Math.floor(i / 2) * 14
-    doc.setDrawColor(37, 99, 235)
+    doc.setDrawColor(67, 176, 241)
     doc.roundedRect(x, yy - 6, 82, 12, 2, 2)
-    doc.setTextColor(30, 41, 59)
+    doc.setTextColor(30, 61, 88)
     doc.setFont(undefined, 'bold')
     doc.text(String(val), x + 4, yy + 2)
     doc.setFont(undefined, 'normal')
-    doc.setTextColor(100, 116, 139)
+    doc.setTextColor(90, 113, 135)
     doc.setFontSize(8)
     doc.text(label, x + 4, yy + 7)
     doc.setFontSize(10)
@@ -391,7 +443,7 @@ const exportarPDF = () => {
   y += 34
 
   if (estoque.value.length) {
-    doc.setTextColor(30, 41, 59)
+    doc.setTextColor(30, 61, 88)
     doc.setFontSize(12)
     doc.setFont(undefined, 'bold')
     doc.text('Estoque por Tipo', 14, y)
@@ -399,7 +451,7 @@ const exportarPDF = () => {
     doc.setFontSize(9)
     doc.setFont(undefined, 'normal')
     estoque.value.forEach(item => {
-      doc.setTextColor(30, 41, 59)
+      doc.setTextColor(30, 61, 88)
       doc.text(`${item.tipo || 'Sem tipo'}: ${item.quantidade} unidades`, 14, y)
       y += 6
       if (y > pageHeight - 30) { doc.addPage(); y = 20 }
@@ -408,7 +460,7 @@ const exportarPDF = () => {
   }
 
   if (entregasRecentes.value.length) {
-    doc.setTextColor(30, 41, 59)
+    doc.setTextColor(30, 61, 88)
     doc.setFontSize(12)
     doc.setFont(undefined, 'bold')
     doc.text('Entregas Recentes', 14, y)
@@ -433,10 +485,20 @@ const exportarPDF = () => {
   box-sizing: border-box;
 }
 
+/* ── Tokens da marca ─────────────────────────────── */
 .app-layout {
+  --c-dark: #1E3D58;
+  --c-accent: #43B0F1;
+  --c-bg: #F5F5F0;
+  --c-surface: #FFFFFF;
+  --c-text: #1E3D58;
+  --c-muted: #5A7187;
+  --c-faint: #8FA3B5;
+  --c-border: #E2E5EA;
+
   display: flex;
   min-height: 100vh;
-  background-color: #f1f5f9;
+  background: var(--c-bg);
   font-family: 'IBM Plex Sans', sans-serif;
 }
 
@@ -447,46 +509,87 @@ const exportarPDF = () => {
   min-width: 0;
 }
 
+/* ── Header ──────────────────────────────────────── */
 .top-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 2rem;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e9f0;
+  padding: 1.4rem 2rem;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .page-title {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
   margin: 0;
 }
 
 .btn-exportar {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background-color: #2563EB;
-  color: white;
+  gap: 7px;
+  background: var(--c-accent);
+  color: #fff;
   border: none;
-  padding: 8px 18px;
-  border-radius: 6px;
+  padding: 9px 22px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 600;
-  transition: background 0.2s, transform 0.15s;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
   font-family: inherit;
+  box-shadow: 0 4px 14px rgba(67, 176, 241, 0.3);
 }
 
-.btn-exportar:hover {
-  background-color: #1d4ed8;
-  transform: translateY(-1px);
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--c-text);
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.hamburger:hover {
+  background: #EDF0F2;
+  border-color: #C8CDD4;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  /* No mobile o main-wrapper ocupa 100% já que a sidebar sai do fluxo */
+  .app-layout {
+    display: block;
+  }
+
+  .main-wrapper {
+    width: 100%;
+  }
+}
+
+
+/* ── Main ────────────────────────────────────────── */
 .dashboard-main {
   padding: 2rem;
   display: flex;
@@ -497,6 +600,7 @@ const exportarPDF = () => {
   margin: 0 auto;
 }
 
+/* ── Stat cards ──────────────────────────────────── */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -504,70 +608,83 @@ const exportarPDF = () => {
 }
 
 .stat-card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 18px 20px;
-  border: 1px solid #e5e9f0;
+  background: var(--c-surface);
+  border-radius: 14px;
+  padding: 20px 22px;
+  border: 1px solid var(--c-border);
+  box-shadow: 0 2px 8px rgba(30, 61, 88, 0.04);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.stat-card:hover {
+  box-shadow: 0 8px 20px rgba(30, 61, 88, 0.08);
+  transform: translateY(-2px);
 }
 
 .stat-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .stat-label {
   font-size: 0.7rem;
-  font-weight: 600;
-  color: #94a3b8;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: var(--c-faint);
+  letter-spacing: 0.8px;
   text-transform: uppercase;
 }
 
 .stat-icon-wrap {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
 }
 
 .stat-icon-wrap.total {
-  background-color: #eff6ff;
+  background: rgba(67, 176, 241, 0.12);
+  color: var(--c-accent);
 }
 
 .stat-icon-wrap.avail {
-  background-color: #f0fdf4;
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
 }
 
 .stat-icon-wrap.inuse {
-  background-color: #fffbeb;
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
 }
 
 .stat-icon-wrap.alert {
-  background-color: #fef2f2;
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
 }
 
 .stat-number {
-  font-size: 2rem;
+  font-size: 2.1rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
   line-height: 1;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
+  letter-spacing: -0.5px;
 }
 
 .stat-sub {
   font-size: 0.78rem;
-  color: #64748b;
+  color: var(--c-muted);
 }
 
 .stat-sub.warn {
-  color: #ef4444;
+  color: #dc2626;
+  font-weight: 500;
 }
 
+/* ── Mid grid ────────────────────────────────────── */
 .mid-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -575,21 +692,23 @@ const exportarPDF = () => {
 }
 
 .card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 20px;
-  border: 1px solid #e5e9f0;
+  background: var(--c-surface);
+  border-radius: 14px;
+  padding: 22px;
+  border: 1px solid var(--c-border);
+  box-shadow: 0 2px 8px rgba(30, 61, 88, 0.04);
 }
 
 .card-title {
-  font-size: 0.875rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 16px 0;
+  color: var(--c-text);
+  margin: 0 0 18px 0;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.8px;
 }
 
+/* Estoque */
 .estoque-list {
   display: flex;
   flex-direction: column;
@@ -604,7 +723,7 @@ const exportarPDF = () => {
 
 .estoque-label {
   font-size: 0.82rem;
-  color: #475569;
+  color: var(--c-muted);
   min-width: 90px;
   font-weight: 500;
 }
@@ -612,26 +731,27 @@ const exportarPDF = () => {
 .bar-track {
   flex: 1;
   height: 8px;
-  background-color: #f1f5f9;
+  background: #EDF0F2;
   border-radius: 4px;
   overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #2563EB, #60a5fa);
+  background: linear-gradient(90deg, #43B0F1, #7CCBF7);
   border-radius: 4px;
   transition: width 0.4s ease;
 }
 
 .estoque-val {
   font-size: 0.82rem;
-  color: #94a3b8;
+  color: var(--c-faint);
   font-weight: 600;
   min-width: 30px;
   text-align: right;
 }
 
+/* Donut */
 .card-circle {
   display: flex;
   flex-direction: column;
@@ -651,13 +771,13 @@ const exportarPDF = () => {
 
 .donut-bg {
   fill: none;
-  stroke: #f1f5f9;
+  stroke: #EDF0F2;
   stroke-width: 12;
 }
 
 .donut-fill {
   fill: none;
-  stroke: #2563EB;
+  stroke: var(--c-accent);
   stroke-width: 12;
   stroke-linecap: round;
   transition: stroke-dasharray 0.5s ease;
@@ -675,23 +795,25 @@ const exportarPDF = () => {
   display: block;
   font-size: 1.6rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-text);
+  letter-spacing: -0.5px;
 }
 
 .circle-lbl {
   display: block;
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--c-faint);
   margin-top: 2px;
 }
 
 .circle-obs {
   font-size: 0.78rem;
-  color: #94a3b8;
+  color: var(--c-faint);
   text-align: center;
   margin: 0;
 }
 
+/* Atividade */
 .atividade-list {
   display: flex;
   flex-direction: column;
@@ -702,10 +824,10 @@ const exportarPDF = () => {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
-  background-color: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid #e5e9f0;
+  padding: 11px 13px;
+  background: #FAFAF7;
+  border-radius: 10px;
+  border: 1px solid var(--c-border);
 }
 
 .ativ-dot {
@@ -716,28 +838,29 @@ const exportarPDF = () => {
 }
 
 .ativ-dot.green {
-  background-color: #22c55e;
+  background: #22c55e;
 }
 
 .ativ-dot.red {
-  background-color: #ef4444;
+  background: #ef4444;
 }
 
 .ativ-dot.yellow {
-  background-color: #f59e0b;
+  background: #f59e0b;
 }
 
 .ativ-text {
   flex: 1;
   font-size: 0.82rem;
-  color: #475569;
+  color: var(--c-muted);
 }
 
 .ativ-time {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--c-faint);
 }
 
+/* ── Tabelas ─────────────────────────────────────── */
 .card-table {
   overflow: hidden;
 }
@@ -753,24 +876,24 @@ const exportarPDF = () => {
 }
 
 .data-table thead tr {
-  background-color: #f8fafc;
+  background: #FAFAF7;
 }
 
 .data-table th {
   padding: 10px 14px;
   text-align: left;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--c-faint);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid #e5e9f0;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid var(--c-border);
 }
 
 .data-table td {
-  padding: 12px 14px;
-  color: #475569;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 13px 14px;
+  color: var(--c-muted);
+  border-bottom: 1px solid #EDF0F2;
 }
 
 .data-table tbody tr:last-child td {
@@ -778,47 +901,43 @@ const exportarPDF = () => {
 }
 
 .data-table tbody tr:hover td {
-  background-color: #f8fafc;
+  background: #FAFAF7;
 }
 
-.badge-ativo {
+/* Badges */
+.badge {
   display: inline-block;
-  background-color: #dcfce7;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.badge--ativo {
+  background: rgba(34, 197, 94, 0.12);
   color: #16a34a;
-  padding: 3px 10px;
-  border-radius: 4px;
-  font-size: 0.72rem;
-  font-weight: 700;
 }
 
-.badge-urgente {
-  display: inline-block;
-  background-color: #fef2f2;
-  color: #ef4444;
-  padding: 3px 10px;
-  border-radius: 4px;
-  font-size: 0.72rem;
-  font-weight: 700;
+.badge--urgente {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
 }
 
-.badge-tipo {
-  display: inline-block;
-  background-color: #f1f5f9;
-  color: #64748b;
-  padding: 3px 10px;
-  border-radius: 4px;
-  font-size: 0.72rem;
+.badge--tipo {
+  background: rgba(67, 176, 241, 0.1);
+  color: #2E86C1;
   font-weight: 600;
 }
 
 .no-data {
   text-align: center;
-  color: #94a3b8;
+  color: var(--c-faint);
   padding: 32px !important;
   font-size: 0.875rem;
 }
 
-/* Card aluno */
+/* ── Card aluno ──────────────────────────────────── */
 .card-aluno-msg {
   display: flex;
   flex-direction: column;
@@ -827,7 +946,7 @@ const exportarPDF = () => {
 
 .aluno-msg {
   font-size: 0.9rem;
-  color: #475569;
+  color: var(--c-muted);
   line-height: 1.6;
 }
 
@@ -835,21 +954,49 @@ const exportarPDF = () => {
   display: inline-flex;
   align-items: center;
   align-self: flex-start;
-  background: #2563EB;
+  background: var(--c-accent);
   color: #fff;
-  padding: 9px 20px;
-  border-radius: 8px;
+  padding: 10px 24px;
+  border-radius: 999px;
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  box-shadow: 0 4px 14px rgba(67, 176, 241, 0.3);
 }
 
 .btn-ver-solicitacoes:hover {
-  background: #1d4ed8;
+  background: #2E9BDF;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(67, 176, 241, 0.4);
 }
 
-@media (max-width: 1200px) {
+/* ── Responsivo ──────────────────────────────────── */
+
+/* Impede scroll horizontal em qualquer situação */
+.app-layout {
+  overflow-x: hidden;
+}
+
+.main-wrapper {
+  overflow-x: hidden;
+  min-width: 0;
+}
+
+.dashboard-main {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Tabelas: scroll interno, nunca empurram o layout */
+.table-wrap {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* Grid quebra em 2 colunas quando o espaço aperta */
+@media (max-width: 1100px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -859,27 +1006,53 @@ const exportarPDF = () => {
   }
 }
 
-@media (max-width: 768px) {
+/* Abaixo de 900px (sidebar + conteúdo ficam apertados) */
+@media (max-width: 900px) {
   .dashboard-main {
     padding: 16px;
+    gap: 14px;
+  }
+
+  .top-header {
+    padding: 12px 16px;
   }
 
   .stats-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 
   .mid-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
-  .top-header {
-    padding: 14px 16px;
+  .stat-number {
+    font-size: 1.75rem;
   }
 }
 
-@media (max-width: 480px) {
+/* Telas pequenas — tudo em coluna única */
+@media (max-width: 600px) {
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .top-header {
+    padding: 10px 12px;
+  }
+
+  .page-title {
+    font-size: 1rem;
+  }
+
+  .btn-exportar {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+
+  .dashboard-main {
+    padding: 12px;
   }
 }
 </style>

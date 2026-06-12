@@ -1,5 +1,28 @@
-html, body, #app {
-  height: 100%;
-  margin: 0;
+* {
   padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+/* Compensa a sidebar fixed em todas as views internas */
+.main-wrapper {
+  margin-left: 232px;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0;
+}
+
+/* Quando sidebar está colapsada, o Dashboard.vue atualiza via classe no app-layout */
+/* Views que usam SidebarACE ou SidebarAluno precisam reagir ao collapse */
+/* Solução: cada app-layout observa a largura da sidebar via JS ou usa CSS var */
+
+@media (max-width: 768px) {
+  .main-wrapper {
+    margin-left: 0 !important;
+  }
 }

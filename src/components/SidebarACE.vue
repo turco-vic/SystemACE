@@ -122,42 +122,41 @@ const mobileOpen = ref(false)
 
 const toggleCollapse = () => { isCollapsed.value = !isCollapsed.value }
 
-defineExpose({ mobileOpen })
+defineExpose({ mobileOpen, isCollapsed })
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
-/* ── Shell ───────────────────────────────────────── */
 .sidebar {
   --sb-bg: #1E3D58;
   --sb-accent: #43B0F1;
   --sb-text: rgba(255, 255, 255, 0.65);
   --sb-text-strong: #ffffff;
   --sb-border: rgba(255, 255, 255, 0.1);
+  --sb-width: 232px;
+  --sb-width-collapsed: 68px;
 
-  width: 232px;
+  width: var(--sb-width);
   background: var(--sb-bg);
   display: flex;
   flex-direction: column;
   font-family: 'IBM Plex Sans', sans-serif;
-
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
   height: 100vh;
-  align-self: flex-start;
-
   z-index: 60;
   flex-shrink: 0;
-  overflow: visible;
+  overflow: hidden;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar.collapsed {
-  width: 68px;
+  width: var(--sb-width-collapsed);
 }
 
-/* ── Overlay mobile ──────────────────────────────── */
+/* Overlay mobile */
 .sidebar-overlay {
   display: none;
   position: fixed;
@@ -167,7 +166,7 @@ defineExpose({ mobileOpen })
   backdrop-filter: blur(2px);
 }
 
-/* ── Logo ────────────────────────────────────────── */
+/* Logo */
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -177,6 +176,7 @@ defineExpose({ mobileOpen })
   min-height: 72px;
   overflow: hidden;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .logo-icon {
@@ -194,12 +194,14 @@ defineExpose({ mobileOpen })
   display: flex;
   flex-direction: column;
   flex: 1;
+  overflow: hidden;
   opacity: 1;
-  transition: opacity 0.2s ease 0.1s;
+  transition: opacity 0.2s ease 0.05s;
 }
 
 .collapsed .logo-text {
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.1s ease;
 }
 
@@ -209,6 +211,7 @@ defineExpose({ mobileOpen })
   color: var(--sb-text-strong);
   letter-spacing: -0.3px;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .logo-sub {
@@ -217,9 +220,9 @@ defineExpose({ mobileOpen })
   color: rgba(255, 255, 255, 0.4);
   letter-spacing: 2px;
   margin-top: 2px;
+  white-space: nowrap;
 }
 
-/* Botão fechar — só mobile */
 .mobile-close {
   display: none;
   background: none;
@@ -231,31 +234,31 @@ defineExpose({ mobileOpen })
   flex-shrink: 0;
 }
 
-/* ── Collapse button (desktop) ───────────────────── */
+/* Collapse button — fica dentro da sidebar */
 .collapse-btn {
   position: absolute;
-  top: 24px;
-  right: -13px;
+  top: 23px;
+  right: 8px;
   width: 26px;
   height: 26px;
-  background: #ffffff;
-  border: 1px solid #E2E5EA;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
   cursor: pointer;
-  color: #5A7187;
+  color: rgba(255, 255, 255, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 70;
-  box-shadow: 0 2px 8px rgba(30, 61, 88, 0.18);
-  transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  z-index: 1;
+  transition: color 0.2s, background 0.2s;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .collapse-btn:hover {
-  color: #43B0F1;
-  border-color: #43B0F1;
-  box-shadow: 0 4px 12px rgba(67, 176, 241, 0.3);
+  color: #fff;
+  background: rgba(67, 176, 241, 0.25);
+  border-color: rgba(67, 176, 241, 0.4);
 }
 
 .collapse-arrow {
@@ -266,15 +269,15 @@ defineExpose({ mobileOpen })
   transform: rotate(180deg);
 }
 
-/* ── Nav ─────────────────────────────────────────── */
+/* Nav */
 .sidebar-nav {
   flex: 1;
   padding: 18px 12px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  overflow-x: visible;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .nav-section-label {
@@ -287,7 +290,7 @@ defineExpose({ mobileOpen })
   margin-bottom: 8px;
   white-space: nowrap;
   opacity: 1;
-  transition: opacity 0.2s ease 0.1s;
+  transition: opacity 0.2s ease 0.05s;
 }
 
 .collapsed .nav-section-label {
@@ -299,16 +302,17 @@ defineExpose({ mobileOpen })
   display: flex;
   align-items: center;
   gap: 11px;
-  padding: 10px 10px;
+  padding: 10px;
   border-radius: 9px;
   text-decoration: none;
   color: var(--sb-text);
   font-size: 0.875rem;
   font-weight: 500;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s, color 0.15s;
   white-space: nowrap;
-  overflow: visible;
+  overflow: hidden;
   position: relative;
+  flex-shrink: 0;
 }
 
 .nav-item:hover {
@@ -347,11 +351,12 @@ defineExpose({ mobileOpen })
   overflow: hidden;
   text-overflow: ellipsis;
   opacity: 1;
-  transition: opacity 0.2s ease 0.1s;
+  transition: opacity 0.2s ease 0.05s;
 }
 
 .collapsed .nav-label {
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.1s ease;
 }
 
@@ -361,24 +366,15 @@ defineExpose({ mobileOpen })
   padding: 10px 0;
 }
 
-.collapsed .nav-label {
-  position: absolute;
-  pointer-events: none;
-}
-
 .collapsed .sidebar-logo {
   justify-content: center;
   padding: 18px 0;
 }
 
-.collapsed .logo-text {
-  position: absolute;
-  pointer-events: none;
-}
-
-/* ── Bottom ──────────────────────────────────────── */
+/* Bottom */
 .sidebar-bottom {
   padding: 12px 12px 22px;
+  flex-shrink: 0;
 }
 
 .nav-divider {
@@ -387,16 +383,13 @@ defineExpose({ mobileOpen })
   margin-bottom: 12px;
 }
 
-/* ── Mobile ──────────────────────────────────────── */
+/* Mobile */
 @media (max-width: 768px) {
   .sidebar {
-    position: fixed;
     left: -232px;
-    top: 0;
-    height: 100vh;
     width: 232px !important;
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 60;
+    overflow: hidden;
   }
 
   .sidebar.mobile-open {
@@ -416,18 +409,25 @@ defineExpose({ mobileOpen })
     display: none;
   }
 
-  .collapsed .nav-label,
-  .collapsed .logo-text,
+  .collapsed .nav-label {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .collapsed .logo-text {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .collapsed .nav-section-label {
     opacity: 1;
-    position: static;
-    pointer-events: auto;
   }
 
   .collapsed .nav-item {
     justify-content: flex-start;
     gap: 11px;
-    padding: 10px 10px;
+    padding: 10px;
+    overflow: hidden;
   }
 
   .collapsed .sidebar-logo {

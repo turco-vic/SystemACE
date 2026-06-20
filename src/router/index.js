@@ -7,6 +7,7 @@ import Dashboard from "../views/Dashboard.vue"
 import Estoque from "../views/Estoque.vue"
 import home_ from "../views/Home.vue"
 import Epis from "../views/Epis.vue"
+import GerenciarSolicitacoes from '../views/GerenciarSolicitacoes.vue'
 
 const routes = [
 
@@ -38,6 +39,10 @@ const routes = [
     {
         path: "/",
         component: home_
+    },
+    {
+        path: "/gerenciar-solicitacoes",
+        component: GerenciarSolicitacoes
     },
 
 ]

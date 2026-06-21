@@ -8,6 +8,10 @@ import Estoque from "../views/Estoque.vue"
 import home_ from "../views/Home.vue"
 import Epis from "../views/Epis.vue"
 import GerenciarSolicitacoes from '../views/GerenciarSolicitacoes.vue'
+import MinhasSolicitacoes from '../views/MinhasSolicitacoes.vue'
+import Alunos from '../views/Alunos.vue'
+import Dashboard from '../views/Dashboard.vue'
+import DashboardAluno from '../views/DashboardAluno.vue'
 
 const routes = [
 
@@ -44,6 +48,19 @@ const routes = [
         path: "/gerenciar-solicitacoes",
         component: GerenciarSolicitacoes
     },
+    {
+        path: "/minhas-solicitacoes",
+        component: MinhasSolicitacoes
+    },
+    {
+        path: "/alunos",
+        component: Alunos
+    },
+    {
+        path: "/dashboard-aluno",
+        component: DashboardAluno
+    },
+    
 
 ]
 
